@@ -4,9 +4,9 @@ This guide is written for everyone interested in deploying graphhopper on a serv
 
 ## Basics
 
-See the [installation section](../../README.md#installation) on how to start the server.
+See the [installation section](../../README_forked.md#installation) on how to start the server.
 
-Then you can embed these commands in a shell script and use this from e.g. [Docker](../../README.md#docker) or systemd.
+Then you can embed these commands in a shell script and use this from e.g. [Docker](../../README_forked.md#docker) or systemd.
 
 For production usage you have a web service included where you can use [this configuration](https://raw.githubusercontent.com/graphhopper/graphhopper/master/config-example.yml)
 Increase the -Xmx/-Xms parameters of the command accordingly.

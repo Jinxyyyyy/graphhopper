@@ -2,7 +2,7 @@
 
 ## Try out
 
-For a simpler start consider the pre-built jar and the general [installation documentation](../../README.md)
+For a simpler start consider the pre-built jar and the general [installation documentation](../../README_forked.md)
 
 To build the GraphHopper jar from the Java sources you need to install `git` and [a recent JDK](https://adoptium.net).
 

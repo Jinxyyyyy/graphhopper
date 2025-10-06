@@ -89,7 +89,7 @@ public class CustomModelTest {
      *
      * Oracle (résultat attendu) :
      * - getDistanceInfluence() retourne null par défaut.
-     * - Après appel à setDistanceInfluence(...), getDistanceInfluence() retourne la valeur donnée.
+     * - Après appel à setDistanceInfluence(), getDistanceInfluence() retourne la valeur donnée.
      * - Le setter retourne l’instance courante.
      */
     // un test pour push
@@ -98,15 +98,14 @@ public class CustomModelTest {
         CustomModel car = new CustomModel();
         assertNull(car.getDistanceInfluence());
 
+        CustomModel car2 = car.setDistanceInfluence(6.5);
+        assertSame(car, car2);
+        assertEquals(6.5, car.getDistanceInfluence(), 0.0001);
+
         car.setDistanceInfluence(2.5);
         assertEquals(2.5, car.getDistanceInfluence(), 0.0001);
 
         car.setDistanceInfluence(4.0);
         assertEquals(4.0, car.getDistanceInfluence(), 0.0001);
-
-        CustomModel car2 = car.setDistanceInfluence(6.5);
-        assertSame(car, car2);
-        assertEquals(6.5, car.getDistanceInfluence(), 0.0001);
-
     }
 }

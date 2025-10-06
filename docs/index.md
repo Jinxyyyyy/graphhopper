@@ -6,7 +6,7 @@ Try out our live demo called [GraphHopper Maps](https://graphhopper.com/maps/)
 
  [![GraphHopper Maps](https://www.graphhopper.com/wp-content/uploads/2022/10/maps2-1024x661.png)](https://graphhopper.com/maps)
 
-[The Readme](../README.md#features) lists all features.
+[The Readme](../README_forked.md#features) lists all features.
 
 See [users of GraphHopper](https://www.graphhopper.com/open-source/) and let us know your application!
 
@@ -19,7 +19,7 @@ For bugs see our [contributing guide](https://github.com/graphhopper/graphhopper
 
 ## Installation
 
-Install the GraphHopper routing engine with the GraphHopper Maps UI with [this installation guide](../README.md#installation) on your
+Install the GraphHopper routing engine with the GraphHopper Maps UI with [this installation guide](../README_forked.md#installation) on your
 machine. This will also install a web API that can be used in many programming languages.
 
  * [Web API](./web/api-doc.md): Documentation to communicate with the GraphHopper server via http.
@@ -75,7 +75,7 @@ See the necessary changes for modern iOS and GraphHopper 1.0 in [this pull reque
 
 #### Windows
 
-Install the Windows Subsystem for Linux (WSL) or cygwin and follow the [normal installation steps](../README.md#installation).
+Install the Windows Subsystem for Linux (WSL) or cygwin and follow the [normal installation steps](../README_forked.md#installation).
 
 When using Powershell or `cmd` the easiest way is to download all files manually (see the `wget` parameters) and then run the `java`
 command but replace the wildcard (`-jar graphhopper*.jar`) with the exact jar file.

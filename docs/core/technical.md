@@ -7,7 +7,7 @@ There are mainly three parts:
 ### 1. Data Import
 
 The default import is done via OSMReader which imports OpenStreetMap data. You can change the configuration
-in the config.yml to read `car`, `foot` or all vehicles. See the [installation section](../../README.md#installation)
+in the config.yml to read `car`, `foot` or all vehicles. See the [installation section](../../README_forked.md#installation)
 for more details.
 The import process is fast e.g. complete Germany takes roughly 10 minutes. Additionally, it will take time if you
 enable speed mode by using `profiles_ch` in the config.yml which will dramatically improve query time

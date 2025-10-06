@@ -1,7 +1,7 @@
 # Isochrone via Java API
 
 To use the following examples you need to specify the dependency in
-your [Maven config](/README.md#maven) correctly.
+your [Maven config](/README_forked.md#maven) correctly.
 
 You'll first need to build off an existing Graphhopper instance for [routing](../core/routing.md).
 
