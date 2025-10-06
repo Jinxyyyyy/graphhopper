@@ -86,11 +86,11 @@ public class PMapTest {
      * Nom du test : testReadValidArgs
      *
      * Intention du test :
-     * Vérifier que PMap.read() interprète correctement un tableau de chaînes au format "clé=valeur"
-     * et stocke les paires dans la map avec le type adéquat (ici, des entiers).
+     * Vérifier que read() interprète correctement un tableau de chaînes "clé=valeur"
+     * et stocke les paires dans la map avec le type adéquat.
      *
      * Motivation des données de test choisies :
-     * Deux clés simples ("foo" et "bar") sont utilisées avec des entiers en valeur pour représenter
+     * Deux clés ("foo" et "bar") sont utilisées avec des entiers en valeur pour représenter
      * un cas d’utilisation classique.
      *
      * Explication de l'oracle :
@@ -107,14 +107,14 @@ public class PMapTest {
      * Nom du test : testReadDuplicateKeyThrows
      *
      * Intention du test :
-     * Vérifier que PMap.read() rejette correctement un tableau d’arguments contenant une clé dupliquée.
+     * Vérifier que read() rejette correctement un tableau d’arguments contenant une clé dupliquée.
      *
      * Motivation des données de test choisies :
      * On fournit deux entrées "foo=1" et "foo=2". Cela simule un scénario où un utilisateur fournit
      * une même clé deux fois avec des valeurs différentes, ce qui doit être interdit.
      *
      * Explication de l'oracle :
-     * Le code de PMap.read() lève une IllegalArgumentException lorsqu’une clé est ajoutée en double.
+     * Le code de read() lève une IllegalArgumentException lorsqu’une clé est ajoutée en double.
      * L’oracle est donc la vérification que cette exception est bien levée dans ce cas.
      */
     @Test
@@ -127,17 +127,17 @@ public class PMapTest {
      *
      * Intention du test :
      * Vérifier que getBool() retourne la valeur stockée lorsqu’elle existe,
-     * et qu’il renvoie la valeur par défaut (_default) lorsque la clé est absente.
+     * et qu’il renvoie la valeur par défaut lorsque la clé est absente.
      *
      * Motivation des données de test choisies :
-     * La clé "flag" est insérée avec la valeur true pour tester la récupération d’un booléen existant.
-     * On utilise ensuite une clé absente ("missing") pour vérifier que la valeur par défaut est utilisée,
+     * La clé "flag" est insérée avec la valeur true pour tester la récupération d’un booléen.
+     * On utilise ensuite une clé ("missing") pour vérifier que la valeur par défaut est utilisée,
      * une fois avec false, une fois avec true.
      *
      * Explication de l'oracle :
      * getBool("flag", false) -> retourne true, car la valeur existe.
-     * - `getBool("missing", false)` -> retourne false, car la clé n’existe pas et la valeur par défaut est false.
-     * - `getBool("missing", true)` ->  retourne true, car la clé n’existe pas et la valeur par défaut est true.
+     * getBool("missing", false) -> retourne false, car la clé n’existe pas et la valeur par défaut est false.
+     * getBool("missing", true) ->  retourne true, car la clé n’existe pas et la valeur par défaut est true.
      */
     @Test
     public void testGetBool() {

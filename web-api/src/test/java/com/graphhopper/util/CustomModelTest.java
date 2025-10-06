@@ -79,20 +79,17 @@ public class CustomModelTest {
      * Test testSetAndGetDistanceInfluence
      *
      * Intention :
-     * Vérifier que la valeur de distanceInfluence est correctement enregistrée
-     * et récupérée.
+     * Vérifier que la valeur de distanceInfluence est correctement enregistrée et récupérée.
      *
      * Motivation des données de test :
-     * - null : confirme qu’aucune valeur n’est définie initialement.
-     * - 2.5, 4.0, 6.5 : valeurs arbitraires mais distinctes, utilisées pour tester
-     *   l’enregistrement, la modification et la lecture cohérente des valeurs.
+     * null : confirme qu’aucune valeur n’est définie initialement.
+     * 2.5, 4.0, 6.5 : valeurs arbitraires, mais distinctes, utilisées pour tester l’enregistrement,
+     * la modification et la lecture cohérente des valeurs.
      *
-     * Oracle (résultat attendu) :
-     * - getDistanceInfluence() retourne null par défaut.
-     * - Après appel à setDistanceInfluence(), getDistanceInfluence() retourne la valeur donnée.
-     * - Le setter retourne l’instance courante.
+     * Oracle :
+     * getDistanceInfluence() retourne null par défaut.
+     * Après appel à setDistanceInfluence(), getDistanceInfluence() retourne la valeur donnée.
      */
-    // un test pour push
     @Test
     public void testSetAndGetDistanceInfluence() {
         CustomModel car = new CustomModel();

@@ -54,11 +54,12 @@
 
 
 
-5. [test5](./web-api/src/test/java/com/graphhopper/util/CustomModelTest.java#L97-L122)
-
+5. [test5]()
+# TODO
 6. [test6]()
-
+# TODO
 7. [test7]()
+# TODO
 
 ## Score de mutation 
 
@@ -111,3 +112,20 @@ Cela est dû principalement de la couverture deux 2 méthodes (`setDistanceInflu
 
 En résumé, l'ajout d'un test sur cette classe a permis d'améliorer la couverture de mutation. 
 
+### com.graphhopper.
+**Avant ajout de 3 tests**
+- Line coverage xx% (xx/xx)
+- Mutation coverage xx% (xx/xx)
+- Test Strength 88% (xx/xx)
+
+**Après ajout de 3 tests**
+- Line coverage xx% (xx/xx)
+- Mutation coverage xx% (xx/xx)
+- Test Strength 88% (xx/xx)
+
+#### Analyse
+
+# TODO 
+
+## Java Faker 
+# TODO
