@@ -92,6 +92,7 @@ public class CustomModelTest {
      * - Après appel à setDistanceInfluence(...), getDistanceInfluence() retourne la valeur donnée.
      * - Le setter retourne l’instance courante.
      */
+    // un test pour push
     @Test
     public void testSetAndGetDistanceInfluence() {
         CustomModel car = new CustomModel();
