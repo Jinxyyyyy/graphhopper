@@ -155,6 +155,7 @@
                 <groupId>com.github.javafaker</groupId>
                 <artifactId>javafaker</artifactId>
                 <version>1.0.2</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -199,7 +200,7 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.22.2</version>
                     <configuration>
-                        <argLine>-Xmx6G -Xms6G -Duser.language=en</argLine>
+                        <argLine>@{argLine} -Xmx190m -Xms190m -Duser.language=en</argLine>
                     </configuration>
                 </plugin>
 
@@ -303,17 +304,17 @@
             <plugin>
                 <groupId>org.pitest</groupId>
                 <artifactId>pitest-maven</artifactId>
-                <version>1.20.3</version>
+                <version>1.20.5</version>
                 <configuration>
-                    <!-- <argLine>${argLine}</argLine> -->
                     <jvmArgs>
                         <jvmArg>-Xmx6G</jvmArg>
                     </jvmArgs>
 
-                    <!-- nombre de threads en parallèle -->
                     <threads>1</threads>
+
                     <timeoutConstant>6000</timeoutConstant>
                     <timeoutFactor>1.5</timeoutFactor>
+
 
                     <targetClasses>
                         <param>com.graphhopper.*</param>
@@ -321,7 +322,12 @@
                     <targetTests>
                         <param>com.graphhopper.*Test</param>
                     </targetTests>
+
                     <reportsDirectory>${project.build.directory}/pit-reports</reportsDirectory>
+
+                    <pluginConfiguration>
+                        <param>junit5Plugin</param>
+                    </pluginConfiguration>
                 </configuration>
                 <dependencies>
                     <dependency>
@@ -331,6 +337,7 @@
                     </dependency>
                 </dependencies>
             </plugin>
+
         </plugins>
     </build>
 
