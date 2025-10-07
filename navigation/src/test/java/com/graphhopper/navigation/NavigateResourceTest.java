@@ -28,6 +28,24 @@ public class NavigateResourceTest {
         assertEquals(4, bearings.size());
         assertEquals(100, bearings.get(1), .1);
     }
+    /**
+     * Nom du test : testRandomBearingsWithFaker
+     *
+     * Intention du test :
+     * Vérifier que la méthode getBearing() extrait correctement le premier angle d'une série de paires d'angles
+     * générées au hasard. Avec Java Faker on produit des donnees au hasard qui nous permettent de tester plusieurs
+     * formats.
+     *
+     * Motivation du test :
+     * Les tests précédents utilisent des valeurs fixes. Ce test introduit de la variabilité à l’aide de la bibliothèque
+     * Java Faker pour s’assurer que la fonction fonctionne correctement avec tout type de valeurs réalistes.
+     * Cela permet de vérifier la robustesse et la stabilité de l’algorithme, indépendamment des valeurs d’entrée.
+     *
+     * Oracle du test :
+     * Pour chaque paire générée (angle1, angle2), la méthode doit extraire uniquement le premier angle (angle1).
+     * On compare donc la liste retournée par getBearing() à la liste attendue "expected" contenant uniquement les angle1.
+     * Les deux listes doivent être de la même taille et contenir les mêmes valeurs aux mêmes indices.
+     */
 
 
     @Test
