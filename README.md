@@ -52,14 +52,52 @@
     - `getBool("missing", false)` -> retourne ***false***, car la clé n’existe pas et la valeur par défaut est ***false***.
     - `getBool("missing", true)` ->  retourne ***true***, car la clé n’existe pas et la valeur par défaut est ***true***.
 
+5. [testEmptyString]()
+    **Intention du test:**
+    -  On vérifie que la méthode retourne un liste video si le input est un string vide.
+     
+   **Motivation du test:**
+    - Gestion de l'exception de string vide pour prevenir un "crash" du programme
+     
+   **Oracle du test:**
+     Input: string vide -> ""
+     Output:
+     assertTrue(result.isEmpty()) retourne ***[]*** la liste vide
 
-
-5. [test5]()
-# TODO
-6. [test6]()
-# TODO
-7. [test7]()
-# TODO
+6. [testNormalList]()
+    **Intention du test:**
+    - On veut voir si le code est capable de compter le nombre d'éléments dans la liste d'élément et soit
+    - capable de retourner les éléments dans une position spécifique.
+      
+   **Motivation du test:**
+    - On veut savoir si la fonction est capable d'extraire comme il se doit,
+    - les données dans la liste pour pouvoir manipuler ces informations par
+    - la suite dans une autre fonction quelconque
+     
+   **Oracle du test:**
+       Input: "[benoit, meryem, yogya]"
+       Output: 
+     - assertEquals(3, result.size())  retourne ***3*** la taille de la liste
+     - assertEquals("benoit", result.get(0)) retourne ***"benoit*** le premier élément
+     - assertEquals("meryem", result.get(1)) retourne ***"meryem*** le deuxieme élément
+     - assertEquals("yogya", result.get(2)) retourne ***yogya*** le troisieme élément
+       
+7. [testListWithEmptyElements]()
+   **Intention du test:**
+    - On veut voir si la méthode parseList est capable de gérer les trous vide dans la liste
+     
+   **Motivation du test:**
+    - Le but est de s'assuré que les trou vide sont bien gérer, sans quoi le programme pourrait
+    - etre surpris par cela et "crash" car il ne sait pas gérer cela.
+     
+   **Oracle du test:**
+     Input -> [benoit, , yogya, , ]
+     Output:
+     assertEquals(2, result.size()) retourne  ***2*** qui est la taille du tableau
+     assertEquals("benoit", result.get(0)) retourne  ***"benoit"*** qui est le premier élément
+     assertEquals("yogya", result.get(1)) retourne ***"yogya"*** qui est le deuxieme élément
+     
+     
 
 ## Score de mutation 
 
