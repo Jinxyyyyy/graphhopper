@@ -52,7 +52,8 @@
     - `getBool("missing", false)` -> retourne ***false***, car la clé n’existe pas et la valeur par défaut est ***false***.
     - `getBool("missing", true)` ->  retourne ***true***, car la clé n’existe pas et la valeur par défaut est ***true***.
 
-5. [testEmptyString]()
+5. [testEmptyString](web-api/src/test/java/com/graphhopper/util/HelperTest.java#L147-151)
+   
     **Intention du test:**
     -  On vérifie que la méthode retourne un liste video si le input est un string vide.
      
@@ -64,7 +65,9 @@
      Output:
      assertTrue(result.isEmpty()) retourne ***[]*** la liste vide
 
-6. [testNormalList]()
+6. [testNormalList](web-api/src/test/java/com/graphhopper/util/HelperTest.java#L170-178)
+
+
     **Intention du test:**
     - On veut voir si le code est capable de compter le nombre d'éléments dans la liste d'élément et soit
     - capable de retourner les éléments dans une position spécifique.
@@ -82,7 +85,7 @@
      - assertEquals("meryem", result.get(1)) retourne ***"meryem*** le deuxieme élément
      - assertEquals("yogya", result.get(2)) retourne ***yogya*** le troisieme élément
        
-7. [testListWithEmptyElements]()
+7. [testListWithEmptyElements](web-api/src/test/java/com/graphhopper/util/HelperTest.java#L197-205)
    **Intention du test:**
     - On veut voir si la méthode parseList est capable de gérer les trous vide dans la liste
      
