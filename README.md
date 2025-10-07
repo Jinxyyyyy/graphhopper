@@ -171,18 +171,46 @@ En résumé, l'ajout d'un test sur cette classe a permis d'améliorer la couvert
 
 ### com.graphhopper.
 **Avant ajout de 3 tests**
-- Line coverage xx% (xx/xx)
-- Mutation coverage xx% (xx/xx)
-- Test Strength 88% (xx/xx)
+- Line coverage 27% (45/167)
+- Mutation coverage 25% (43/173)
+- Test Strength 88% (43/49)
 
 **Après ajout de 3 tests**
-- Line coverage xx% (xx/xx)
-- Mutation coverage xx% (xx/xx)
-- Test Strength 88% (xx/xx)
+- Line coverage 33% (55/167)
+- Mutation coverage 27% (47/173)
+- Test Strength 88% (47/54)
 
 #### Analyse
 
-# TODO 
+On observe que le score de mutation a augmenté de 2 %, avec 4 mutants détectés de plus qu’auparavant. 
+De plus, la couverture de lignes est passée de 27 % à 33 %. Ces trois tests couvrent donc du code qui n’était pas 
+testé auparavant par les développeurs de GraphHopper. Cependant, la force des tests est restée stable à 88 %, comme avant.
 
-## Java Faker 
-# TODO
+Je pense que l’une des principales raisons de ces résultats est que nous avons testé la même fonction avec trois cas de tests différents. 
+Il est également important de noter que ces trois cas sont du même type, à savoir des tests basés sur des assertions (assert).
+Je crois que si nous avions utilisé d’autres types de tests (par exemple des tests de performance, d’exception ou de paramétrisation),
+nous aurions pu obtenir de meilleurs résultats globaux.
+
+Pour ce qui est des mutants, on peut expliquer les grandes catégories de mutants qui ont été tués et par quel test.
+D’après le rapport, des mutants de type **negated conditional** et **null return** ont été tués. Ce genre de mutants est détecté par le **testEmptyString**, 
+qui vérifie si le résultat est vide ou null dans certains cas : si ce n’est pas le cas, le mutant est tué.
+
+Ensuite, le **testNormalList** tue les mutants de type **changed conditional boundary**, **removed trim** et **negated condition**. Ces mutants modifient les 
+conditions en les inversant ou empêchent la suppression des espaces superflus (trim) dans les chaînes de caractères. 
+Si des caractères en trop apparaissent, ce que provoquent ces mutants, le test échoue et le mutant est donc tué.
+
+Enfin, le **testListWithEmptyElements** tue les mutants du type **negated conditional** et **removed if**. Ce test échoue si des éléments vides sont ajoutés
+: par exemple, si la condition est inversée par le mutant, la liste contiendra plus de deux éléments, ce qui ne respecte pas l’assertion, et le mutant est tué.
+
+
+## Justification Java Faker 
+
+Le test testRandomBearingsWithFaker a pour objectif de vérifier le bon fonctionnement d’une méthode qui traite des angles représentés sous forme de chaînes de caractères. L’idée principale est de s’assurer que la méthode peut correctement extraire et manipuler des valeurs provenant d’entrées variées, même lorsque celles-ci sont générées aléatoirement.
+
+Pour cela, nous utilisons Java Faker, qui permet de générer des nombres aléatoires. Chaque valeur aléatoire est ensuite combinée pour former une chaîne représentant deux angles séparés par une virgule. Cette approche simule des entrées réalistes mais qui varie, ce qui permet de tester la robustesse de la méthode sous pression dans différentes situations.
+
+L’importance de ce test est dans sa capacité à détecter des erreurs de parsing ou de traitement des données. Le test vérifie que, pour chaque chaîne générée, le premier angle est correctement identifié et stocké dans la liste des résultats. Si la méthode échoue à extraire la bonne valeur, le test échoue.
+
+Cette stratégie permet donc de tester de manière dynamique et répétable la méthode sur un large éventail de données possibles, ce qui est beaucoup plus efficace que de coder manuellement chaque scénario. De plus, elle garantit que la méthode reste fiable même lorsque les valeurs d’entrée changent, ce qui est crucial pour tout système qui doit traiter des données variées provenant de différentes sources.
+
+En résumé, le test testRandomBearingsWithFaker sert à valider que la méthode gère correctement des entrées multiples, aléatoires et variées, tout en assurant que le comportement attendu — l’extraction correcte du premier angle — est toujours respecté.
