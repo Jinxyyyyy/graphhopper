@@ -117,8 +117,19 @@
 
 #### Analyse
 On observe un forte augmentation de la couverture des mutants passant de 34% à 58%, avec 9 mutants supplémentaires détectés. Cette amélioration s'explique une meilleure couverture de deux méthodes non testées : `getBool()` et `read()`. 
+ 
+**Nouveaux mutants détectés :**
 
-Ici, on observe un forte augmentation de la couverture des mutants pour un total 9 nouveaux mutants. 
+    `L71#2 negated conditional -> NO_CONVERAGE` ---> `KILLED`
+    `L76#1 negated conditional -> NO_CONVERAGE` ---> `KILLED`
+    `L80#1 negated conditional -> NO_CONVERAGE` ---> `KILLED`
+    `L84#1 Replaced integer addition with substraction -> NO_CONVERAGE` ---> `KILLED`
+    `L86#1 negated conditional -> NO_CONVERAGE` ---> `KILLED`
+    `L90#1 replaced return value for null for read() ---> `KILLED`
+    
+    `L108#1 replaced boolean return with true for getBool() -> NO_CONVERAGE` ---> `KILLED`
+    `L108#2 negated conditional -> NO_CONVERAGE` ---> `KILLED`
+    `L108#1 replaced boolean return with false for getBool() -> NO_CONVERAGE` ---> `KILLED`
 
 - `getBool()` : 
     Avant l'ajout des tests, cette méthode n'était pas couverte, ce qui empêchait la détection de 3 mutants. 
@@ -143,6 +154,9 @@ En résumé, l'ajout de 3 tests augmente significativement la couverture du code
 #### Analyse
 On observe une augmentation du score de mutation, passant de 8/33 à 10/33, soit 2 mutants supplémentaires détectés. 
 Cela est dû principalement de la couverture deux 2 méthodes (`setDistanceInfluence()` et `getDistanceInfluence()`) non couvertes auparavant. 
+
+    `L141#1 replaced value with null for setDistanceInfluence() -> NO_CONVERAGE` ---> `KILLED`
+    `L145#1 replaced Double return value with 0 for getDistanceInfluence() -> SURVIVED Covering tests` ---> `KILLED`
 
 - `setDistanceInfluence()` :
     Avant l'ajout des tests, cette méthode n'était pas couverte, ce qui empêchait la détection ce mutant.
