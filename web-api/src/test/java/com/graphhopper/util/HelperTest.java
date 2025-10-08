@@ -157,7 +157,7 @@ public class HelperTest {
      * Vérifier que la méthode parseList est capable de parser correctement une chaîne représentant
      * une liste et de restituer tous les éléments dans l’ordre attendu.
      *
-     * Motivation :
+     * Motivation des données :
      * S’assurer que la méthode parseList identifie correctement chaque élément d’une liste non vide,
      * en conservant à la fois la taille exacte et l’ordre des éléments.
      *

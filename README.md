@@ -24,10 +24,10 @@
     - Deux clés ("foo" et "bar") sont utilisées avec des entiers en valeur pour représenter un cas d’utilisation classique.
     
     **Explication de l'oracle :**
-    - Après parsing, la clé "foo" doit renvoyer 1 et la clé "bar" doit renvoyer 2 via `getInt()`.
-    - L’oracle consiste à comparer ces résultats avec les valeurs attendues.
+    - Après parsing, la clé "foo" doit renvoyer 1 et la clé "bar" doit renvoyer 2 via `getInt()`. L’oracle consiste à comparer ces résultats avec les valeurs attendues.
 
 3. [testReadDuplicateKeyThrows](./web-api/src/test/java/com/graphhopper/util/PMapTest.java#L20-L123)
+
     **Intention du test :**
     - Vérifier que `read()` rejette correctement un tableau d’arguments contenant une clé dupliquée.
    
@@ -35,72 +35,49 @@
     - On fournit deux entrées "foo=1" et "foo=2". Cela simule un scénario où un utilisateur fournit une même clé deux fois avec des valeurs différentes, ce qui doit être interdit.
    
     **Oracle :**
-    - Le code de `read()` lève une `IllegalArgumentException` lorsqu’une clé est ajoutée en double.
-    - L’oracle est la vérification que cette exception est bien levée.
+    - Le code de `read()` lève une `IllegalArgumentException` lorsqu’une clé est ajoutée en double. L’oracle est la vérification que cette exception est bien levée.
       
 4. [testGetBool](./web-api/src/test/java/com/graphhopper/util/PMapTest.java#L142-L149)
 
     **Intention du test :**
     - Vérifier que `getBool()` retourne la valeur stockée lorsqu’elle existe, et qu’il renvoie la valeur par défaut  lorsque la clé est absente.
    
-      **Motivation des données de test :**
+    **Motivation des données de test :**
     - La clé "flag" est insérée avec la valeur ***true*** pour tester la récupération d’un booléen existant.
     - On utilise ensuite une clé ("missing") pour vérifier que la valeur par défaut est utilisée, une fois avec ***false***, une fois avec ***true***.
    
     **Oracle :**
-    - `getBool("flag", false)` -> retourne ***true***, car la valeur existe.
-    - `getBool("missing", false)` -> retourne ***false***, car la clé n’existe pas et la valeur par défaut est ***false***.
-    - `getBool("missing", true)` ->  retourne ***true***, car la clé n’existe pas et la valeur par défaut est ***true***.
-
-5. [testEmptyString](web-api/src/test/java/com/graphhopper/util/HelperTest.java#L147-151)
+    - L’oracle valide que la valeur retournée par getBool() correspond à la valeur associée à la clé, ou à la valeur par défaut si la clé n’existe pas.
+5. [testEmptyString()](web-api/src/test/java/com/graphhopper/util/HelperTest.java#L147-L151)
    
-    **Intention du test:**
-    -  On vérifie que la méthode retourne un liste video si le input est un string vide.
+    **Intention du test :**
+    -  Vérifier que la méthode `parseList()` retourne une liste vide lorsqu’elle reçoit en entrée une chaîne de caractères vide.
      
-   **Motivation du test:**
-    - Gestion de l'exception de string vide pour prevenir un "crash" du programme
-     
-   **Oracle du test:**
-     Input: string vide -> ""
-     Output:
-     assertTrue(result.isEmpty()) retourne ***[]*** la liste vide
+   **Motivation des données :**
+   - S’assurer que la méthode `parseList()` est robuste face à un cas limite (entrée vide) et qu’elle ne provoque pas d’erreurs d’exécution. 
+   
+   - **Oracle du test :** 
+   - Pour une chaîne vide en entrée, la méthode doit retourner une liste vide.
 
-6. [testNormalList](web-api/src/test/java/com/graphhopper/util/HelperTest.java#L170-178)
-
-
-    **Intention du test:**
-    - On veut voir si le code est capable de compter le nombre d'éléments dans la liste d'élément et soit
-    - capable de retourner les éléments dans une position spécifique.
+6. [testNormalList()](web-api/src/test/java/com/graphhopper/util/HelperTest.java#L170-L178)
+    **Intention du test :**
+    - Vérifier que la méthode `parseList()` est capable de parser correctement une chaîne représentant une liste et de restituer tous les éléments dans l’ordre attendu.
       
-   **Motivation du test:**
-    - On veut savoir si la fonction est capable d'extraire comme il se doit,
-    - les données dans la liste pour pouvoir manipuler ces informations par
-    - la suite dans une autre fonction quelconque
+   **Motivation des données :**
+    - S’assurer que la méthode `parseList()` identifie correctement chaque élément d’une liste non vide, en conservant à la fois la taille exacte et l’ordre des éléments.
      
-   **Oracle du test:**
-       Input: "[benoit, meryem, yogya]"
-       Output: 
-     - assertEquals(3, result.size())  retourne ***3*** la taille de la liste
-     - assertEquals("benoit", result.get(0)) retourne ***"benoit*** le premier élément
-     - assertEquals("meryem", result.get(1)) retourne ***"meryem*** le deuxieme élément
-     - assertEquals("yogya", result.get(2)) retourne ***yogya*** le troisieme élément
-       
-7. [testListWithEmptyElements](web-api/src/test/java/com/graphhopper/util/HelperTest.java#L197-205)
-   **Intention du test:**
-    - On veut voir si la méthode parseList est capable de gérer les trous vide dans la liste
+   **Oracle :**
+   - L’oracle confirme que, pour l’entrée `[benoit, meryem, yogya]`, le résultat attendu est une liste ordonnée de taille 3, où `élément[0] = "benoit"`, `élément[1] = "meryem"` et `élément[2] = "yogya"`.       
+
+7. [testListWithEmptyElements()](web-api/src/test/java/com/graphhopper/util/HelperTest.java#L197-L205)
+   **Intention :**
+    - Vérifier que la méthode `parseList()` est capable d’ignorer correctement les éléments vides lorsqu’elle parse une chaîne représentant une liste.
      
-   **Motivation du test:**
-    - Le but est de s'assuré que les trou vide sont bien gérer, sans quoi le programme pourrait
-    - etre surpris par cela et "crash" car il ne sait pas gérer cela.
-     
-   **Oracle du test:**
-     Input -> [benoit, , yogya, , ]
-     Output:
-     assertEquals(2, result.size()) retourne  ***2*** qui est la taille du tableau
-     assertEquals("benoit", result.get(0)) retourne  ***"benoit"*** qui est le premier élément
-     assertEquals("yogya", result.get(1)) retourne ***"yogya"*** qui est le deuxieme élément
-     
-     
+   **Motivation des données :**
+   - S’assurer que la méthode`parseList()` gère de manière robuste la présence d’éléments vides, afin d’éviter des erreurs d’exécution ou un comportement inattendu.
+   
+   **Oracle du test :**
+   - L’oracle confirme que, pour l’entrée `[benoit, , yogya, , ]`, le résultat attendu est une liste ordonnée de taille 2, où élément[0] = "benoit" et élément[1] = "yogya".
 
 ## Score de mutation 
 
@@ -116,7 +93,7 @@
 - Test Strength 88% (22/25)
 
 #### Analyse
-On observe un forte augmentation de la couverture des mutants passant de 34% à 58%, avec 9 mutants supplémentaires détectés. Cette amélioration s'explique une meilleure couverture de deux méthodes non testées : `getBool()` et `read()`. 
+On observe une forte augmentation de la couverture des mutants passant de 34% à 58%, avec 9 mutants supplémentaires détectés. Cette amélioration s'explique une meilleure couverture de deux méthodes non testées : `getBool()` et `read()`. 
  
 **Nouveaux mutants détectés :**
 
@@ -126,7 +103,6 @@ On observe un forte augmentation de la couverture des mutants passant de 34% à 
     `L84#1 Replaced integer addition with substraction -> NO_CONVERAGE` ---> `KILLED`
     `L86#1 negated conditional -> NO_CONVERAGE` ---> `KILLED`
     `L90#1 replaced return value for null for read() ---> `KILLED`
-    
     `L108#1 replaced boolean return with true for getBool() -> NO_CONVERAGE` ---> `KILLED`
     `L108#2 negated conditional -> NO_CONVERAGE` ---> `KILLED`
     `L108#1 replaced boolean return with false for getBool() -> NO_CONVERAGE` ---> `KILLED`
@@ -169,7 +145,8 @@ Cela est dû principalement de la couverture deux 2 méthodes (`setDistanceInflu
 
 En résumé, l'ajout d'un test sur cette classe a permis d'améliorer la couverture de mutation. 
 
-### com.graphhopper.
+### com.graphhopper.util.Helper
+
 **Avant ajout de 3 tests**
 - Line coverage 27% (45/167)
 - Mutation coverage 25% (43/173)
@@ -182,35 +159,32 @@ En résumé, l'ajout d'un test sur cette classe a permis d'améliorer la couvert
 
 #### Analyse
 
-On observe que le score de mutation a augmenté de 2 %, avec 4 mutants détectés de plus qu’auparavant. 
-De plus, la couverture de lignes est passée de 27 % à 33 %. Ces trois tests couvrent donc du code qui n’était pas 
-testé auparavant par les développeurs de GraphHopper. Cependant, la force des tests est restée stable à 88 %, comme avant.
+On observe une augmentation du score de 2% avec 4 nouveaux mutants détectés et une hausse de 6% de la couverture des lignes. Cette amélioration s'explique principalement par la meilleure couverture de la méthode `parseList()`.
+Cependant, la force de test reste stable à 88%, ce qui suggère que les cas nouveaux cas de test n'améliorent pas significativement la qualité du code.
 
-Je pense que l’une des principales raisons de ces résultats est que nous avons testé la même fonction avec trois cas de tests différents. 
-Il est également important de noter que ces trois cas sont du même type, à savoir des tests basés sur des assertions (assert).
-Je crois que si nous avions utilisé d’autres types de tests (par exemple des tests de performance, d’exception ou de paramétrisation),
-nous aurions pu obtenir de meilleurs résultats globaux.
+Cela pourrait être dû au fait que les 3 nouveaux tests testent la meme fonction (`parseList()`) avec des assertions simples et du même type. Une amélioration possible est de tester plus de méthodes de la classe `Helper.java`, valider les exceptions et ajouter des tests paramétrés. 
 
-Pour ce qui est des mutants, on peut expliquer les grandes catégories de mutants qui ont été tués et par quel test.
-D’après le rapport, des mutants de type **negated conditional** et **null return** ont été tués. Ce genre de mutants est détecté par le **testEmptyString**, 
-qui vérifie si le résultat est vide ou null dans certains cas : si ce n’est pas le cas, le mutant est tué.
+**Nouveaux mutants détectés :**
 
-Ensuite, le **testNormalList** tue les mutants de type **changed conditional boundary**, **removed trim** et **negated condition**. Ces mutants modifient les 
-conditions en les inversant ou empêchent la suppression des espaces superflus (trim) dans les chaînes de caractères. 
-Si des caractères en trop apparaissent, ce que provoquent ces mutants, le test échoue et le mutant est donc tué.
+    `L408#2 negated conditional → NO_COVERAGE` ---> `KILLED`
+    `L410#1 Replaced integer subtraction with addition -> NO_COVERAGE` ---> `KILLED`
+    `L414#1 negated conditional → NO_COVERAGE` ---> `KILLED`
+    `L418#1 replaced return value with Collections.emptyList parseList() → NO_COVERAGE` ---> `KILLED`
 
-Enfin, le **testListWithEmptyElements** tue les mutants du type **negated conditional** et **removed if**. Ce test échoue si des éléments vides sont ajoutés
-: par exemple, si la condition est inversée par le mutant, la liste contiendra plus de deux éléments, ce qui ne respecte pas l’assertion, et le mutant est tué.
+On observe qu’avant l’introduction des trois nouveaux cas de test, quatre mutants liés à la méthode `parseList()` n’étaient pas tués. Cela s’explique simplement par le fait que les tests initiaux ne couvraient pas correctement cette méthode.
 
+En bref, l'augmentation du score de mutation et la couverture des lignes n'implique pas toujours l'augmentation de la force de test. 
 
 ## Justification Java Faker 
 
-Le test testRandomBearingsWithFaker a pour objectif de vérifier le bon fonctionnement d’une méthode qui traite des angles représentés sous forme de chaînes de caractères. L’idée principale est de s’assurer que la méthode peut correctement extraire et manipuler des valeurs provenant d’entrées variées, même lorsque celles-ci sont générées aléatoirement.
+[testRandomBearingsWithFaker()](./navigation/src/test/java/com/graphhopper/navigation/NavigateResourceTest.java#L52-L75)
 
-Pour cela, nous utilisons Java Faker, qui permet de générer des nombres aléatoires. Chaque valeur aléatoire est ensuite combinée pour former une chaîne représentant deux angles séparés par une virgule. Cette approche simule des entrées réalistes mais qui varie, ce qui permet de tester la robustesse de la méthode sous pression dans différentes situations.
+Le test `testRandomBearingsWithFaker()` a pour objectif de vérifier le bon fonctionnement d’une méthode qui traite des angles représentés sous forme de chaînes de caractères. L’idée principale est de s’assurer que la méthode peut correctement extraire et manipuler des valeurs provenant d’entrées variées, même lorsque celles-ci sont générées aléatoirement.
 
-L’importance de ce test est dans sa capacité à détecter des erreurs de parsing ou de traitement des données. Le test vérifie que, pour chaque chaîne générée, le premier angle est correctement identifié et stocké dans la liste des résultats. Si la méthode échoue à extraire la bonne valeur, le test échoue.
+Pour cela, nous utilisons **Java Faker**, une bibliothèque qui permet de générer des nombres aléatoires. Chaque valeur aléatoire est combinée pour former une chaîne représentant **deux angles séparés par une virgule**. Cette approche simule des entrées réalistes mais variables, afin de tester la robustesse de la méthode dans différentes situations.
 
-Cette stratégie permet donc de tester de manière dynamique et répétable la méthode sur un large éventail de données possibles, ce qui est beaucoup plus efficace que de coder manuellement chaque scénario. De plus, elle garantit que la méthode reste fiable même lorsque les valeurs d’entrée changent, ce qui est crucial pour tout système qui doit traiter des données variées provenant de différentes sources.
+L’importance de ce test est en sa capacité à **détecter des erreurs de parsing ou de traitement des données**. Le test vérifie que, pour chaque chaîne générée, le premier angle est correctement identifié et stocké dans la liste des résultats. Si la méthode échoue à extraire la bonne valeur, le test échoue.
 
-En résumé, le test testRandomBearingsWithFaker sert à valider que la méthode gère correctement des entrées multiples, aléatoires et variées, tout en assurant que le comportement attendu — l’extraction correcte du premier angle — est toujours respecté.
+Cette stratégie permet donc de tester de manière **dynamique et répétable** la méthode sur un large éventail de données possibles, ce qui est beaucoup plus efficace que de coder manuellement chaque scénario. Elle garantit que la méthode reste fiable même lorsque les valeurs d’entrée changent, ce qui est crucial pour tout système qui doit traiter des données variées provenant de différentes sources.
+
+En résumé, le test `testRandomBearingsWithFaker()` valide que la méthode gère correctement des entrées multiples, aléatoires et variées, tout en assurant que le comportement attendu, l’extraction correcte du premier angle, est toujours respecté.

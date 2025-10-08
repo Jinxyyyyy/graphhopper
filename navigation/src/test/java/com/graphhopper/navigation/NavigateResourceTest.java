@@ -33,10 +33,10 @@ public class NavigateResourceTest {
      *
      * Intention du test :
      * Vérifier que la méthode getBearing() extrait correctement le premier angle d'une série de paires d'angles
-     * générées au hasard. Avec Java Faker on produit des donnees au hasard qui nous permettent de tester plusieurs
+     * générées aléatoirement. Avec Java Faker, des données variées sont produites permettant de tester plusieurs
      * formats.
      *
-     * Motivation du test :
+     * Motivation des données :
      * Les tests précédents utilisent des valeurs fixes. Ce test introduit de la variabilité à l’aide de la bibliothèque
      * Java Faker pour s’assurer que la fonction fonctionne correctement avec tout type de valeurs réalistes.
      * Cela permet de vérifier la robustesse et la stabilité de l’algorithme, indépendamment des valeurs d’entrée.
@@ -59,7 +59,7 @@ public class NavigateResourceTest {
             double angle1 = faker.number().randomDouble(2, 0, 180); // premier angle
             double angle2 = faker.number().randomDouble(2, 0, 180); // deuxième angle
             bearingStrings.add(angle1 + "," + angle2);
-            expected.add(angle1); // on ne prend que le premier angle
+            expected.add(angle1);
         }
 
         String input = String.join(";", bearingStrings);
