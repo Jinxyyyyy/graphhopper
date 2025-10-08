@@ -15,7 +15,7 @@
     - `getDistanceInfluence()` retourne null par défaut.
     - Après appel à `setDistanceInfluence()`, `getDistanceInfluence()` retourne la valeur donnée.
 
-2. [testReadValidArgs()](https://github.com/Jinxyyyyy/graphhopper/blob/master/web-api/src/test/java/com/graphhopper/util/PMapTest.java.java#L100-L105)
+2. [testReadValidArgs()](https://github.com/Jinxyyyyy/graphhopper/blob/master/web-api/src/test/java/com/graphhopper/util/PMapTest.java#L100-L105)
 
    **Intention du test :**
     - Vérifier que `read()` interprète correctement un tableau de chaînes "clé=valeur" et stocke les paires dans la map avec le type adéquat.
@@ -40,7 +40,7 @@
 4. [testGetBool](https://github.com/Jinxyyyyy/graphhopper/blob/master/web-api/src/test/java/com/graphhopper/util/PMapTest.java#L142-L151)
 
    **Intention du test :**
-    - Vérifier que `getBool()` retourne la valeur stockée lorsqu’elle existe, et qu’il renvoie la valeur par défaut  lorsque la clé est absente.
+    - Vérifier que `getBool()` retourne la valeur stockée lorsqu’elle existe, et qu’il renvoie la valeur par défaut lorsque la clé est absente.
 
    **Motivation des données de test :**
     - La clé "flag" est insérée avec la valeur ***true*** pour tester la récupération d’un booléen existant.
