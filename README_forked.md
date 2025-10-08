@@ -29,7 +29,7 @@ to get started with contribution.
 
 ## Get Started
 
-To get started you can try [GraphHopper Maps](README_forked.md#graphhopper-maps), read through [our documentation](./docs/index.md) and install GraphHopper including the Maps UI locally.
+To get started you can try [GraphHopper Maps](README_forked.md#graphhopper-maps), read through [our documentation](docs/_forked.md) and install GraphHopper including the Maps UI locally.
 
 * 10.x: [documentation](https://github.com/graphhopper/graphhopper/blob/10.x/docs/index.md)
   , [web service jar](https://repo1.maven.org/maven2/com/graphhopper/graphhopper-web/10.0/graphhopper-web-10.0.jar)
@@ -112,7 +112,7 @@ java -D"dw.graphhopper.datareader.file=berlin-latest.osm.pbf" -jar graphhopper*.
 After a while you see a log message with 'Server - Started', then go to http://localhost:8989/ and
 you'll see a map of Berlin. You should be able to right click on the map to create a route.
 
-See the [documentation](./docs/index.md) that contains e.g. [the elevation guide](./docs/core/elevation.md) and the [deployment guide](./docs/core/deploy.md).
+See the [documentation](docs/_forked.md) that contains e.g. [the elevation guide](./docs/core/elevation.md) and the [deployment guide](./docs/core/deploy.md).
 
 ### Docker
 
