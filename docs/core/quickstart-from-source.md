@@ -60,7 +60,7 @@ See this [guide](../../CONTRIBUTING.md) on how to contribute.
 
 ### Java, Embedded Usage
 
-Have a look into the [Java API documentation](../index.md#developer) for further details e.g. how [GraphHopper can
+Have a look into the [Java API documentation](../_forked.md#developer) for further details e.g. how [GraphHopper can
 be embedded](./routing.md) into your application and how you create a [custom weighting](./weighting.md).
 
 Look [here](https://github.com/graphhopper/graphhopper#maven) for the maven snippet to use GraphHopper in your
