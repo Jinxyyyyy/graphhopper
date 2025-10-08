@@ -2,7 +2,7 @@
 
 ## Nouveaux tests 
 
-1. [testSetAndGetDistanceInfluence()](https://github.com/Jinxyyyyy/graphhopper/blob/master/web-api/src/test/java/com/graphhopper/util/CustomModelTest.java#L97-L107)
+1. [testSetAndGetDistanceInfluence()](https://github.com/Jinxyyyyy/graphhopper/blob/master/web-api/src/test/java/com/graphhopper/util/CustomModelTest.java#L94-L107)
 
     **Intention :** 
     Vérifier que la valeur de distanceInfluence est correctement enregistrée et récupérée
@@ -15,7 +15,7 @@
    - `getDistanceInfluence()` retourne null par défaut.
    - Après appel à `setDistanceInfluence()`, `getDistanceInfluence()` retourne la valeur donnée.
    
-2. [testReadValidArgs()](https://github.com/Jinxyyyyy/graphhopper/blob/master/web-api/src/test/java/com/graphhopper/util/CustomModelTest.java#L100-L105)
+2. [testReadValidArgs()](https://github.com/Jinxyyyyy/graphhopper/blob/master/web-api/src/test/java/com/graphhopper/util/PMapTest.java#L100-L105)
 
    **Intention du test :**
     - Vérifier que `read()` interprète correctement un tableau de chaînes "clé=valeur" et stocke les paires dans la map avec le type adéquat.
