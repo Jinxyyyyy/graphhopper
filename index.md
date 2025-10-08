@@ -2,7 +2,7 @@
 
 ## Nouveaux tests 
 
-1. [testSetAndGetDistanceInfluence()](https://github.com/Jinxyyyyy/graphhopper/blob/master/web-api/src/test/java/com/graphhopper/util/CustomModelTest.java#L97-L122)
+1. [testSetAndGetDistanceInfluence()](https://github.com/Jinxyyyyy/graphhopper/blob/master/web-api/src/test/java/com/graphhopper/util/CustomModelTest.java#L93-L107)
 
     **Intention :** 
     Vérifier que la valeur de distanceInfluence est correctement enregistrée et récupérée
@@ -15,7 +15,7 @@
    - `getDistanceInfluence()` retourne null par défaut.
    - Après appel à `setDistanceInfluence()`, `getDistanceInfluence()` retourne la valeur donnée.
    
-2. [testReadValidArgs()](https://github.com/Jinxyyyyy/graphhopper/blob/master/web-api/src/test/java/com/graphhopper/util/CustomModelTest.java#L100-L105)
+2. [testReadValidArgs()](https://github.com/Jinxyyyyy/graphhopper/blob/master/web-api/src/test/java/com/graphhopper/util/PMapTest.java.java#L100-L105)
 
    **Intention du test :**
     - Vérifier que `read()` interprète correctement un tableau de chaînes "clé=valeur" et stocke les paires dans la map avec le type adéquat.
@@ -26,7 +26,7 @@
     **Explication de l'oracle :**
     - Après parsing, la clé "foo" doit renvoyer 1 et la clé "bar" doit renvoyer 2 via `getInt()`. L’oracle consiste à comparer ces résultats avec les valeurs attendues.
 
-3. [testReadDuplicateKeyThrows](https://github.com/Jinxyyyyy/graphhopper/blob/master/web-api/src/test/java/com/graphhopper/util/PMapTest.java#L20-L123)
+3. [testReadDuplicateKeyThrows](https://github.com/Jinxyyyyy/graphhopper/blob/master/web-api/src/test/java/com/graphhopper/util/PMapTest.java#L120-L123)
 
     **Intention du test :**
     - Vérifier que `read()` rejette correctement un tableau d’arguments contenant une clé dupliquée.
@@ -37,7 +37,7 @@
     **Oracle :**
     - Le code de `read()` lève une `IllegalArgumentException` lorsqu’une clé est ajoutée en double. L’oracle est la vérification que cette exception est bien levée.
       
-4. [testGetBool](https://github.com/Jinxyyyyy/graphhopper/blob/master/web-api/src/test/java/com/graphhopper/util/PMapTest.java#L142-L149)
+4. [testGetBool](https://github.com/Jinxyyyyy/graphhopper/blob/master/web-api/src/test/java/com/graphhopper/util/PMapTest.java#L142-L151)
 
     **Intention du test :**
     - Vérifier que `getBool()` retourne la valeur stockée lorsqu’elle existe, et qu’il renvoie la valeur par défaut  lorsque la clé est absente.
@@ -60,6 +60,7 @@
    - Pour une chaîne vide en entrée, la méthode doit retourner une liste vide.
 
 6. [testNormalList()](https://github.com/Jinxyyyyy/graphhopper/blob/master/web-api/src/test/java/com/graphhopper/util/HelperTest.java#L170-L178)
+
     **Intention du test :**
     - Vérifier que la méthode `parseList()` est capable de parser correctement une chaîne représentant une liste et de restituer tous les éléments dans l’ordre attendu.
       
@@ -70,6 +71,7 @@
    - L’oracle confirme que, pour l’entrée `[benoit, meryem, yogya]`, le résultat attendu est une liste ordonnée de taille 3, où `élément[0] = "benoit"`, `élément[1] = "meryem"` et `élément[2] = "yogya"`.       
 
 7. [testListWithEmptyElements()](https://github.com/Jinxyyyyy/graphhopper/blob/master/web-api/src/test/java/com/graphhopper/util/HelperTest.java#L197-L205)
+
    **Intention :**
     - Vérifier que la méthode `parseList()` est capable d’ignorer correctement les éléments vides lorsqu’elle parse une chaîne représentant une liste.
      
