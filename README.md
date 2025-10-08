@@ -2,7 +2,7 @@
 
 ## Nouveaux tests 
 
-1. [testSetAndGetDistanceInfluence()](https://github.com/Jinxyyyyy/graphhopper/blob/master/web-api/src/test/java/com/graphhopper/util/CustomModelTest.java#L97-L122)
+1. [testSetAndGetDistanceInfluence()](https://github.com/Jinxyyyyy/graphhopper/blob/master/web-api/src/test/java/com/graphhopper/util/CustomModelTest.java#L97-L107)
 
     **Intention :** 
     Vérifier que la valeur de distanceInfluence est correctement enregistrée et récupérée
@@ -26,7 +26,7 @@
     **Explication de l'oracle :**
     - Après parsing, la clé "foo" doit renvoyer 1 et la clé "bar" doit renvoyer 2 via `getInt()`. L’oracle consiste à comparer ces résultats avec les valeurs attendues.
 
-3. [testReadDuplicateKeyThrows](https://github.com/Jinxyyyyy/graphhopper/blob/master/web-api/src/test/java/com/graphhopper/util/PMapTest.java#L20-L123)
+3. [testReadDuplicateKeyThrows](https://github.com/Jinxyyyyy/graphhopper/blob/master/web-api/src/test/java/com/graphhopper/util/PMapTest.java#L120-L123)
 
     **Intention du test :**
     - Vérifier que `read()` rejette correctement un tableau d’arguments contenant une clé dupliquée.
