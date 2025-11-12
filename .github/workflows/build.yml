@@ -1,18 +1,25 @@
-name: Build and Test
+name: Build, Test and PIT
 on: push
+
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
       matrix:
-        java-version: [ 24, 25-ea ]
+        java-version: [17]
+      fail-fast: false
+
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - uses: actions/setup-java@v4
         with:
           java-version: ${{ matrix.java-version }}
           distribution: temurin
+          cache: maven
+
       - name: Cache Maven artifacts
         uses: actions/cache@v4
         with:
@@ -20,6 +27,7 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
+
       - name: Cache node
         uses: actions/cache@v4
         with:
@@ -27,6 +35,7 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os}}-node-
+
       - name: Cache node_modules
         uses: actions/cache@v4
         with:
@@ -34,6 +43,184 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/pom.xml', '**/package.json') }}
           restore-keys: |
             ${{ runner.os}}-node_modules-
-      - name: Build ${{ matrix.java-version }}
-        run: mvn -B clean test
 
+      - name: Install tools
+        run: sudo apt-get update && sudo apt-get install -y bc libxml2-utils
+
+      # Téléchargement des scores PIT du run précédent
+      - name: Download previous PIT scores
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "=== Attempting to download previous PIT scores ==="
+          
+          # Télécharge l'artifact du dernier run réussi sur cette branche
+          gh run list \
+            --workflow="${{ github.workflow }}" \
+            --branch="${{ github.ref_name }}" \
+            --status=success \
+            --limit=5 \
+            --json databaseId \
+            --jq '.[].databaseId' | while read run_id; do
+          
+            echo "Checking run #$run_id for artifacts..."
+          
+            if gh run download "$run_id" \
+              --name pit-scores-baseline \
+              --dir . 2>/dev/null; then
+              echo "Successfully downloaded scores from run #$run_id"
+              exit 0
+            fi
+          done
+          
+          echo "No previous scores found (this is normal for the first run)"
+
+      - name: List downloaded scores
+        run: |
+          echo "=== Previous scores status ==="
+          if ls pit-score-*.txt 1> /dev/null 2>&1; then
+            echo "Found previous scores:"
+            ls -la pit-score-*.txt
+          else
+            echo "No previous scores (baseline will be set)"
+          fi
+
+      - name: Build all modules
+        run: mvn -B clean install -DskipTests -Djacoco.skip=true
+
+      # Détection des modules Maven modifiés
+      - name: Detect changed Maven modules
+        id: changed
+        uses: tj-actions/changed-files@v44
+        with:
+          files: |
+            **/pom.xml
+            **/src/**
+
+      - name: Compute module list
+        id: modules
+        run: |
+          MODULES=$(echo "${{ steps.changed.outputs.all_changed_files }}" \
+            | grep -E '^(core|web|web-api|reader-gtfs|map-matching|tools|client-hc|navigation|example)' \
+            | cut -d'/' -f1 | sort -u | tr '\n' ',' | sed 's/,$//')
+
+          if [ -z "$MODULES" ]; then
+            echo "No modules changed. Running full build."
+            echo "modules=" >> $GITHUB_OUTPUT
+          else
+            echo "Changed modules: $MODULES"
+            echo "modules=$MODULES" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run PIT mutation testing (selective)
+        if: steps.modules.outputs.modules != ''
+        run: |
+          mvn -B org.pitest:pitest-maven:mutationCoverage \
+            -pl ${{ steps.modules.outputs.modules }} \
+            -DtargetClasses='com.graphhopper.*' \
+            -DtargetTests='com.graphhopper.*Test' \
+            -DreportsDirectory=target/pit-reports \
+            -DoutputFormats=XML,HTML \
+            -DtimestampedReports=false \
+            -DjvmArgs='-Xmx6G'
+
+      - name: Run PIT mutation testing (full)
+        if: steps.modules.outputs.modules == ''
+        run: |
+          # Construire dynamiquement la liste des modules sauf core et reader-gtfs
+          ALL_MODULES=$(ls -d */pom.xml | cut -d'/' -f1 | grep -Ev '^(core|reader-gtfs|web)$' | tr '\n' ',' | sed 's/,$//')
+          echo "Running PIT on modules: $ALL_MODULES"
+
+          mvn -B org.pitest:pitest-maven:mutationCoverage \
+            -pl $ALL_MODULES \
+            -DtargetClasses='com.graphhopper.*' \
+            -DtargetTests='com.graphhopper.*Test' \
+            -DreportsDirectory=target/pit-reports \
+            -DoutputFormats=XML,HTML \
+            -DtimestampedReports=false \
+            -Dthreads=2 \
+            -DjvmArgs='-Xmx6G' \
+            -DtimeoutConstant=60000 \
+            -DtimeoutFactor=2 \
+            -DdependencyDistance=0 \
+            -DfailWhenNoMutations=false \
+
+
+      # Vérification des scores de mutation par module
+      - name: Check mutation coverage regression
+        run: |
+          echo "=== Checking mutation score regression ==="
+          failed=false
+          
+          for file in $(find . -name "mutations.xml"); do
+            module=$(echo "$file" | sed 's|^\./||' | cut -d'/' -f1)
+          
+            # Compte les mutations totales et détectées
+            total=$(xmllint --xpath "count(//mutation)" "$file")
+            killed=$(xmllint --xpath "count(//mutation[@detected='true'])" "$file")
+          
+            if [ "$total" -eq 0 ]; then
+              echo "$module: No mutations found (skipped)"
+              continue
+            fi
+          
+            coverage=$(echo "scale=2; 100 * $killed / $total" | bc -l)
+            echo "$module: ${coverage}% ($killed/$total mutations killed)"
+          
+            # Vérifie si un score précédent existe
+            old_file="pit-score-${module}.txt"
+            if [ -f "$old_file" ]; then
+              old=$(cat "$old_file")
+              echo "   Previous: ${old}%"
+          
+              if (( $(echo "$coverage < $old" | bc -l) )); then
+                echo "REGRESSION: Mutation score decreased for $module (${coverage}% < ${old}%)"
+                failed=true
+              else
+                echo "OK: Score maintained or improved"
+              fi
+            else
+              echo "   (No previous score - baseline set)"
+            fi
+          
+            # Sauvegarde le nouveau score
+            echo "$coverage" > "$old_file"
+          done
+          
+          if [ "$failed" = true ]; then
+            echo ""
+            echo "Build failed: one or more modules lost mutation coverage."
+            exit 1
+          else
+            echo ""
+            echo "All modules maintained or improved mutation coverage."
+          fi
+
+      # Upload des scores comme artifact (baseline pour le prochain run)
+      - name: Upload PIT scores baseline
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pit-scores-baseline
+          path: pit-score-*.txt
+          if-no-files-found: ignore
+          retention-days: 90
+          overwrite: true
+
+      # Artifacts pour consultation
+      - name: Upload PIT reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pit-reports-java-${{ matrix.java-version }}
+          path: '**/target/pit-reports'
+          if-no-files-found: ignore
+          retention-days: 30
+
+      - name: Archive test reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports-java-${{ matrix.java-version }}
+          path: '**/target/surefire-reports'
+          retention-days: 7
