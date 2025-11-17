@@ -30,6 +30,12 @@
             <groupId>io.dropwizard</groupId>
             <artifactId>dropwizard-core</artifactId>
         </dependency>
+        <dependency>
+    <groupId>org.mockito</groupId>
+    <artifactId>mockito-core</artifactId>
+    <version>5.6.0</version> <!-- prends la dernière version disponible -->
+    <scope>test</scope>
+</dependency>
     </dependencies>
 
 </project>
