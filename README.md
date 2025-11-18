@@ -188,3 +188,67 @@ L’importance de ce test est en sa capacité à **détecter des erreurs de pars
 Cette stratégie permet donc de tester de manière **dynamique et répétable** la méthode sur un large éventail de données possibles, ce qui est beaucoup plus efficace que de coder manuellement chaque scénario. Elle garantit que la méthode reste fiable même lorsque les valeurs d’entrée changent, ce qui est crucial pour tout système qui doit traiter des données variées provenant de différentes sources.
 
 En résumé, le test `testRandomBearingsWithFaker()` valide que la méthode gère correctement des entrées multiples, aléatoires et variées, tout en assurant que le comportement attendu, l’extraction correcte du premier angle, est toujours respecté.
+
+
+
+# Rapport tâche 3 - IFT3913A25 - Poldo Silva et Costarella-Serra
+
+
+**Documentation GA**
+
+**1.Modifications apportées à l'action**
+
+**2.Validation des modifications** 
+
+
+**Documentation mocks**
+
+**1.Choix des classes**
+Les deux classes choisies sont : **DistanceConfig** et **ConditionalDistanceVoiceInstructionConfig**. On a choisi ces classes car elles ne sont pas très complexes et elles dépendent de peu d’éléments externes. Elles dépendent notamment de **TranslationMap** et de **Translation**, qui eux-mêmes n’ont pas de dépendances supplémentaires, ce qui facilite leur simulation avec des mocks.
+
+Initialement, nous avions essayé de créer des tests avec des mocks pour la classe **DijkstraBiDirectionCH**, mais cela s’est avéré extrêmement difficile : cette classe possède de nombreuses dépendances, elles-mêmes dépendantes d’autres classes, et l’utilisation de mocks dans ce contexte devient très complexe et peu fiable. Cette expérience nous a montré les limites des mocks pour des classes fortement imbriquées, et nous a amenés à nous concentrer sur des classes moins complexes, comme **DistanceConfig** et **ConditionalDistanceVoiceInstructionConfig**.
+
+Ces classes sont intéressantes pour les tests avec mocks car elles contiennent une logique interne importante (gestion des distances et génération d’instructions vocales), tout en étant suffisamment isolables grâce aux mocks. Cela permet de tester précisément leur comportement sans dépendre de la configuration réelle ou des fichiers de traduction, garantissant des tests unitaires fiables et reproductibles.
+
+**2.Définition des mocks**
+Comme mentionne ci-haut on a decider de mock les classes TranslationMap et Translation dont **DistanceConfig** et **ConditionalDistanceVoiceInstructionConfig** dependant. Pour ce faire, on a defini les mock de facons suivante.
+
+**Creation mock pour ConditionalDistanceVoiceInstructionConfig**:
+- mockTranslationMap = mock(TranslationMap.class);
+- mockTranslation = mock(com.graphhopper.util.Translation.class);
+
+**Definition mock pour ConditionalDistanceVoiceInstructionConfig**:
+- when(mockTranslationMap.getWithFallBack(any(Locale.class))).thenReturn(mockTranslation);
+- when(mockTranslation.tr(anyString(), any())).thenReturn("dummy");
+
+**Creation mock pour DistanceConfig**:
+-mockTranslationMap = mock(TranslationMap.class);
+
+**Definition mock pour DistanceConfig**:
+- when(mockTranslationMap.getWithFallBack(any(Locale.class))).thenReturn(mock(com.graphhopper.util.Translation.class));
+
+**3.Changements dans les tests**
+
+Pour adapter les tests initiaux en utilisant des mocks, plusieurs modifications ont été apportées aux tests creer par les developpeurs de GraphHopper et on va les expliquer ci-dessous :
+
+**1.Remplacement des dépendances réelles par des mocks**
+Dans les tests originaux, TranslationMap et Translation étaient utilisées telles quelles, ce qui rendait les tests dépendants des fichiers de traduction et des configurations réelles.
+Dans les tests mockés, ces dépendances ont été remplacées par des objets simulés, permettant de contrôler totalement leur comportement. Par exemple, toute traduction renvoie "dummy".
+
+**2.Adaptation des assertions**
+Les tests officiels vérifiaient le texte exact des instructions vocales (par exemple "In 400 meters turn then") mais cela ne nous importe pas car on veut tester la logique avec les mocks en eliminant la dependance au fichier contenant les strings avec les directions. Donc les assertions se concentrent sur la logique interne de la classe : la sélection correcte de la distance (distanceAlongGeometry / distanceVoiceValue) et la présence de la description de direction(Left/Right) dans l’objet retourné.
+
+**3.Isolation de la classe testée**
+
+Ces changements permettent de transformer des tests qui ressemblaient à des tests d’intégration en tests unitaires isolés, reproductibles et stables, sans dépendre de la configuration externe de d'autres documents, fichiers ou initialisation de structure de donnees. Cela garantit que tout échec dans le test provient de la logique interne de la classe et non d’un problème avec les dépendances.
+
+**4.Maintien de la pertinence fonctionnelle**
+
+Même avec les mocks, les tests continuent de vérifier le comportement réel attendu de la classe : que la bonne instruction vocale soit choisie pour une distance donnée et que la valeur renvoyée soit correcte ou null si la distance est trop courte. Ainsi, les tests restent pertinents et fiables, tout en étant plus rapides et plus simples à exécuter.
+
+En résumé, les changements consistent principalement à isoler les dépendances et à adapter les assertions pour tester uniquement la logique de la classe. Cela permet d’obtenir des tests unitaires robustes, faciles à maintenir et reproduisibles dans n’importe quel environnement, tout en restant cohérents avec les scénarios originaux fournis par les tests officiels de GraphHopper.
+
+
+
+
+
