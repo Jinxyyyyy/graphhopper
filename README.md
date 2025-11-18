@@ -194,23 +194,23 @@ En résumé, le test `testRandomBearingsWithFaker()` valide que la méthode gèr
 # Rapport tâche 3 - IFT3913A25 - Poldo Silva et Costarella-Serra
 
 
-**Documentation GA**
+## **Documentation GA**
 
-**1.Modifications apportées à l'action**
+### **1.Modifications apportées à l'action**
 
-**2.Validation des modifications** 
+### **2.Validation des modifications** 
 
 
-**Documentation mocks**
+## **Documentation mocks**
 
-**1.Choix des classes**
+### **1.Choix des classes**
 Les deux classes choisies sont : **DistanceConfig** et **ConditionalDistanceVoiceInstructionConfig**. On a choisi ces classes car elles ne sont pas très complexes et elles dépendent de peu d’éléments externes. Elles dépendent notamment de **TranslationMap** et de **Translation**, qui eux-mêmes n’ont pas de dépendances supplémentaires, ce qui facilite leur simulation avec des mocks.
 
 Initialement, nous avions essayé de créer des tests avec des mocks pour la classe **DijkstraBiDirectionCH**, mais cela s’est avéré extrêmement difficile : cette classe possède de nombreuses dépendances, elles-mêmes dépendantes d’autres classes, et l’utilisation de mocks dans ce contexte devient très complexe et peu fiable. Cette expérience nous a montré les limites des mocks pour des classes fortement imbriquées, et nous a amenés à nous concentrer sur des classes moins complexes, comme **DistanceConfig** et **ConditionalDistanceVoiceInstructionConfig**.
 
 Ces classes sont intéressantes pour les tests avec mocks car elles contiennent une logique interne importante (gestion des distances et génération d’instructions vocales), tout en étant suffisamment isolables grâce aux mocks. Cela permet de tester précisément leur comportement sans dépendre de la configuration réelle ou des fichiers de traduction, garantissant des tests unitaires fiables et reproductibles.
 
-**2.Définition des mocks**
+### **2.Définition des mocks**
 Comme mentionne ci-haut on a decider de mock les classes TranslationMap et Translation dont **DistanceConfig** et **ConditionalDistanceVoiceInstructionConfig** dependant. Pour ce faire, on a defini les mock de facons suivante.
 
 **Creation mock pour ConditionalDistanceVoiceInstructionConfig**:
@@ -227,7 +227,7 @@ Comme mentionne ci-haut on a decider de mock les classes TranslationMap et Trans
 **Definition mock pour DistanceConfig**:
 - when(mockTranslationMap.getWithFallBack(any(Locale.class))).thenReturn(mock(com.graphhopper.util.Translation.class));
 
-**3.Changements dans les tests**
+### **3.Changements dans les tests**
 
 Pour adapter les tests initiaux en utilisant des mocks, plusieurs modifications ont été apportées aux tests creer par les developpeurs de GraphHopper et on va les expliquer ci-dessous :
 
