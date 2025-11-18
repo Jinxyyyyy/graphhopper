@@ -232,10 +232,12 @@ Comme mentionne ci-haut on a decider de mock les classes TranslationMap et Trans
 Pour adapter les tests initiaux en utilisant des mocks, plusieurs modifications ont été apportées aux tests creer par les developpeurs de GraphHopper et on va les expliquer ci-dessous :
 
 **1.Remplacement des dépendances réelles par des mocks**
+
 Dans les tests originaux, TranslationMap et Translation étaient utilisées telles quelles, ce qui rendait les tests dépendants des fichiers de traduction et des configurations réelles.
 Dans les tests mockés, ces dépendances ont été remplacées par des objets simulés, permettant de contrôler totalement leur comportement. Par exemple, toute traduction renvoie "dummy".
 
 **2.Adaptation des assertions**
+
 Les tests officiels vérifiaient le texte exact des instructions vocales (par exemple "In 400 meters turn then") mais cela ne nous importe pas car on veut tester la logique avec les mocks en eliminant la dependance au fichier contenant les strings avec les directions. Donc les assertions se concentrent sur la logique interne de la classe : la sélection correcte de la distance (distanceAlongGeometry / distanceVoiceValue) et la présence de la description de direction(Left/Right) dans l’objet retourné.
 
 **3.Isolation de la classe testée**
