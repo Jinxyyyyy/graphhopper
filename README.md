@@ -9,42 +9,38 @@ L’objectif du projet est de mettre en place, au sein de GitHub Actions, un mé
 Nous avons choisi de récupérer, pour chaque module testable du projet, le score de mutation global. Une approche plus fine, par exemple récupérer un score de mutation pour chaque classe, aurait été possible, mais elle alourdirait considérablement la suite du pipeline et complexifierait l’analyse. À l’inverse, une approche moins granulaire consistant à calculer un score global unique pour l’ensemble de GraphHopper fournirait trop peu d’informations en cas d’échec du build, rendant le diagnostic difficile pour l’utilisateur.
 Ainsi, la granularité par module représente un bon compromis : elle reste suffisamment simple à implémenter tout en offrant une information pertinente et exploitable lorsque le build échoue.
 
+---
+
 Le flux d'exécution du workflows est le suivant: 
 ### 1 Récupération des scores de mutation du build précédent
-[lien vers l'action]
+https://github.com/Jinxyyyyy/graphhopper/blob/7c99ffcd0e1d5c6e742649501658516e116c12f6/.github/workflows/build.yml#L54-L60
 Avant d'exécuter les tests de mutations sur le build courant, le workflow tente de récupérer les scores de mutations des builds précédents. 
-Le script `download-pit-scores.sh` [lien vers le script] effectue les actions suivantes:
+Le script [download-pit-scores.sh](https://github.com/Jinxyyyyy/graphhopper/blob/7c99ffcd0e1d5c6e742649501658516e116c12f6/.github/workflows/scripts/download-pit-scores.sh) effectue les actions suivantes:
 
 1- Le script interroge GitHub pour récupérer les runs précédents
 
-```bash
-gh run list \
-  --workflow="$WORKFLOW" \
-  --branch="$BRANCH" \
-  --status=success \
-  --limit="$LIMIT"
-```
-
 2- Pour chaque run trouvé, on télécharge l'artificat **pit-scores-baselines**. Lorsqu'un artifact est trouvé, il est téléchargé dans le répertoire courant. Le script s'arrêt dès qu'il trouve un run contenant les scores. 
 
-3- Deux cas sont possibles 
+3- Deux cas sont possibles:
 
-    1- **Des scores ont été trouvés**: On a une baseline pour comparaison.
-    
-    2- **Aucun score trouvé**: C'est le premier run, on set la baseline pour le prochain build. 
+1. **Des scores ont été trouvés**: On a une baseline pour comparaison. 
+2. **Aucun score trouvé**: C'est le premier run, on set la baseline pour le prochain build. 
 
 ### 2 Exécution des tests de mutation sur le build courant
-lien vers l'action
-Après la compilation et l'exécution des tests unitaires, le workflow lance les tests de mutation avec **PITEST**. Le script `run-pit-test.sh` contient la logique d'execution. 
+https://github.com/Jinxyyyyy/graphhopper/blob/7c99ffcd0e1d5c6e742649501658516e116c12f6/.github/workflows/build.yml#L65-L71
+
+Après la compilation et l'exécution des tests unitaires, le workflow lance les tests de mutation avec **PITEST**. Le script `run-pit-test.sh` contient la logique d'exécution. 
+https://github.com/Jinxyyyyy/graphhopper/blob/7c99ffcd0e1d5c6e742649501658516e116c12f6/.github/workflows/scripts/run-pit-test.sh#L23-L35
+
 Il y a 2 points importants dans la logique d'exécution. 
 
 1- Les modules CORE et READER-GTFS sont exclus. Les tests de mutations n'achèvent jamais, possiblement à cause de boucles infinis.
 
 2- Les paramètres `-DreportsDirectory=target/pit-reports -DoutputFormats=XML,HTML` permettent de générer un rapport dans les répertoires `target/pit-reports/mutations.xml`et `target/pit-reports/index.html`. `mutations.xml`sera nécessaire pour évaluer la régression des scores de mutations. 
 
-### 3 Verification de la régression de mutation
-lien vers l'action
-Le script `check-mutation-regression.sh` effectue les actions suivantes: 
+### 3 Vérification de la régression de mutation
+https://github.com/Jinxyyyyy/graphhopper/blob/7c99ffcd0e1d5c6e742649501658516e116c12f6/.github/workflows/build.yml#L76-L78
+Le script [check-mutation-regression.sh](https://github.com/Jinxyyyyy/graphhopper/blob/7c99ffcd0e1d5c6e742649501658516e116c12f6/.github/workflows/scripts/check-mutation-regression.sh) effectue les actions suivantes: 
 
 1- Récupère pour chaque module testé, un fichier `mutations.xml`
 
@@ -67,14 +63,116 @@ Le script `check-mutation-regression.sh` effectue les actions suivantes:
 
 Que le build soit un succès ou un échec, les données sont sauvegardés sous forme d'artifacts. 
 
-1- lien vers Upload PIT scores baseline: On sauvegarde **toujours** tous les fichiers `pit-score-*.txt` et on le conserve 90 jours.
+1-  On sauvegarde **toujours** tous les fichiers `pit-score-*.txt` et on le conserve 90 jours.
+    https://github.com/Jinxyyyyy/graphhopper/blob/7c99ffcd0e1d5c6e742649501658516e116c12f6/.github/workflows/build.yml#L110-L118
  
-3- lien vers Upload PIT reports: On sauvegarde **toujours** tous les fichiers dans `*/target/pit-reports/` et conserve 30 jours. Cela inclut `mutations.xml` et `ìndex.html`
-   
-5- lien vers archire test reports on failure: En cas **d'échec**, On sauvegarde tous les rapports Surefire et conserve 7 jours, pour faciliter le débogage. 
+2- On sauvegarde **toujours** tous les fichiers dans `*/target/pit-reports/` et conserve 30 jours. Cela inclut `mutations.xml` et `ìndex.html`
+    https://github.com/Jinxyyyyy/graphhopper/blob/7c99ffcd0e1d5c6e742649501658516e116c12f6/.github/workflows/build.yml#L121-L128
+
+3- lien vers archire test reports on failure: En cas **d'échec**, On sauvegarde tous les rapports Surefire et conserve 7 jours, pour faciliter le débogage. 
+    https://github.com/Jinxyyyyy/graphhopper/blob/7c99ffcd0e1d5c6e742649501658516e116c12f6/.github/workflows/build.yml#L130-L136
 
 
-### **2.Validation des modifications** 
+## Validation des modifications
+
+Afin de valider le bon fonctionnement du mécanisme de détection de régression, trois exécutions distinctes ont été réalisées.  
+Chacune permet d’observer le comportement du pipeline dans une situation contrôlée, et de confirmer que le build échoue correctement lorsque le score de mutation diminue.
+
+---
+
+### Étape 1 — Établissement de la baseline (aucune modification)
+*Objectif : générer un run “propre” afin de créer les scores de référence.*
+
+Pour cette première exécution, aucun changement n’est apporté au code.  
+Un simple *push* sans modification déclenche la génération :
+
+- du score de mutation courant,
+- des fichiers `pit-score-*.txt` qui serviront de baseline pour les runs suivants.
+
+### Tableau des scores (Run 1 — Baseline)
+
+| Module        | Score courant | Score précédent | Status    |
+|---------------|---------------|-----------------|-----------|
+| client-hc     | —             | —               | Baseline  |
+| example       | —             | —               | Baseline  |
+| map-matching  | —             | —               | Baseline  |
+| navigation    | —             | —               | Baseline  |
+| tools         | —             | —               | Baseline  |
+| web           | —             | —               | Baseline  |
+| web-api       | —             | —               | Baseline  |
+| web-bundle    | —             | —               | Baseline  |
+
+### Capture du pipeline (Run 1)
+![Run 1 Status](run1.jpeg)
+
+---
+
+### Étape 2 — Régression intentionnelle dans un module
+*Objectif : vérifier que l’algorithme détecte une baisse du score de mutation.*
+
+Dans ce second run, des tests sont volontairement retirés dans des modules où l’on sait qu’ils augmentaient précédemment le score PIT.  
+Cette suppression entraîne donc mécaniquement une baisse, permettant de valider :
+
+- la détection correcte de la régression,
+- l’identification du module affecté,
+- l’échec automatique du build.
+
+### Tableau des scores (Run 2 — Régression ciblée)
+
+| Module        | Score courant | Score précédent | Status                   |
+|---------------|---------------|-----------------|--------------------------|
+| client-hc     | —             | —               | —                        |
+| example       | —             | —               | —                        |
+| map-matching  | —             | —               | —                        |
+| navigation    | —             | —               | —                        |
+| tools         | —             | —               | —                        |
+| web           | —             | —               | —                        |
+| web-api       | —             | —               | —                        |
+| web-bundle    | —             | —               | Regression / Unchanged / Improved |
+
+### Capture du pipeline (Run 2 — Failure attendu)
+![Run 2 Status](run2.jpeg)
+
+---
+
+### Étape 3 — Régression sur plusieurs modules
+*Objectif : vérifier que la méthode fonctionne dans un cas plus large avec plusieurs modules impactés.*
+
+Dans cette troisième exécution, des tests sont retirés aléatoirement dans plusieurs modules.  
+Cette étape valide que :
+
+- plusieurs régressions peuvent être détectées simultanément,
+- le tableau récapitulatif les distingue correctement,
+- le build échoue dès qu’un seul module régressé est détecté.
+
+### Tableau des scores (Run 3 — Régression multiple)
+
+| Module        | Score courant | Score précédent | Status                   |
+|---------------|---------------|-----------------|--------------------------|
+| client-hc     | —             | —               | —                        |
+| example       | —             | —               | —                        |
+| map-matching  | —             | —               | —                        |
+| navigation    | —             | —               | —                        |
+| tools         | —             | —               | —                        |
+| web           | —             | —               | —                        |
+| web-api       | —             | —               | —                        |
+| web-bundle    | —             | —               | Regression / Unchanged / Improved |
+
+### Capture du pipeline (Run 3 — Failure attendu)
+![Run 3 Status](run3.jpeg)
+
+---
+
+### Conclusion de la validation
+
+Sur l’ensemble des trois exécutions :
+
+- la baseline est correctement établie (Run 1),
+- une régression ciblée est bien détectée et fait échouer le pipeline (Run 2),
+- plusieurs régressions simultanées sont également correctement prises en compte (Run 3).
+
+Le système de validation mis en place se comporte donc comme prévu :  
+**toute baisse du score de mutation entraîne automatiquement un échec du build GitHub Actions.**
 
 
 ## **Documentation mocks**
