@@ -47,15 +47,17 @@ class ConditionalDistanceVoiceInstructionConfigMockTest {
      */
     @Test
     void testGetConfigForDistance_returnsCorrectInstruction() {
+        // Distances “géométriques” pour les seuils de l’instruction vocale
         int[] geometryDistances = {50, 100, 150};
+        // Valeurs vocales correspondantes à chaque seuil
         int[] voiceValues = {50, 100, 150};
-
+        // Création de la configuration d’instruction vocale conditionnelle
         ConditionalDistanceVoiceInstructionConfig config =
                 new ConditionalDistanceVoiceInstructionConfig(
                         "in_lower_distance", mockTranslationMap, Locale.ENGLISH,
                         geometryDistances, voiceValues
                 );
-
+        // Récupère l’instruction vocale correspondant à une distance de 120
         VoiceInstructionConfig.VoiceInstructionValue value =
                 config.getConfigForDistance(120, "turn right", "");
         
