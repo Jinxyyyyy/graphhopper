@@ -89,7 +89,7 @@ Un simple *push* sans modification déclenche la génération :
 - du score de mutation courant,
 - des fichiers `pit-score-*.txt` qui serviront de baseline pour les runs suivants.
 
-### Tableau des scores (Run 1 — Baseline)
+### Tableau des scores (Run 1)
 
 | Module        | Score courant | Score précédent | Status    |
 |---------------|---------------|-----------------|-----------|
@@ -99,36 +99,28 @@ Un simple *push* sans modification déclenche la génération :
 | web           | 35.68%        | —               | Baseline  |
 | web-api       | 34.48%        | —               | Baseline  |
 
-### Capture du pipeline (Run 1)
-![Run 1 Status](run1.jpeg)
-
----
-
 ### Étape 2 — Régression intentionnelle dans un module
 *Objectif : vérifier que l’algorithme détecte une baisse du score de mutation.*
 
-Dans ce second run, des tests sont volontairement retirés dans des modules où l’on sait qu’ils augmentaient précédemment le score PIT.  
+Dans ce second run, des tests sont volontairement retirés dans des modules où l’on sait qu’ils augmentaient précédemment le score PIT. Les tests retirés correspondent aux tests ajoutés à la tâche 2 qui fessaient augmenter le score de mutation. 
 Cette suppression entraîne donc mécaniquement une baisse, permettant de valider :
 
 - la détection correcte de la régression,
 - l’identification du module affecté,
 - l’échec automatique du build.
 
-### Tableau des scores (Run 2 — Régression ciblée)
+### Tableau des scores (Run 2)
 
-| Module        | Score courant | Score précédent | Status                   |
-|---------------|---------------|-----------------|--------------------------|
-| client-hc     | —             | —               | —                        |
-| example       | —             | —               | —                        |
-| map-matching  | —             | —               | —                        |
-| navigation    | —             | —               | —                        |
-| tools         | —             | —               | —                        |
-| web           | —             | —               | —                        |
-| web-api       | —             | —               | —                        |
-| web-bundle    | —             | —               | Regression / Unchanged / Improved |
+| Module        | Score courant | Score précédent | Status     |
+|---------------|---------------|-----------------|------------|
+| client-hc     | 38.99%        | 38.99%          | Unchanged  |
+| example       | 43.10%        | 43.10%          | Unchanged  |
+| navigation    | 60.56%        | 60.56%          | Unchanged  |
+| web           | 35.68%        | 34.47%          | Regression |
+| web-api       | 34.48%        | 34.48%          | Unchanged  |
 
-### Capture du pipeline (Run 2 — Failure attendu)
-![Run 2 Status](run2.jpeg)
+
+On observe une réduction de 1,21% sur le module web-api, le module ciblé. Le run **Build, Test & PIT #52 (force mutation on web-api)** échoue. Cela valide que la méthode fonctionne sur un module spécifique.  
 
 ---
 
@@ -139,7 +131,6 @@ Dans cette troisième exécution, des tests sont retirés aléatoirement dans pl
 Cette étape valide que :
 
 - plusieurs régressions peuvent être détectées simultanément,
-- le tableau récapitulatif les distingue correctement,
 - le build échoue dès qu’un seul module régressé est détecté.
 
 ### Tableau des scores (Run 3 — Régression multiple)

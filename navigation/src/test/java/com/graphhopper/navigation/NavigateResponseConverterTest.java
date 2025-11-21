@@ -498,127 +498,127 @@ public class NavigateResponseConverterTest {
         assertEquals(step.get("intersections").size(), 2);
     }
 
-    @Test
-    public void startAtBarrierTest() {
-        // Start the route exactly at the barrier
-        // https://www.openstreetmap.org/node/2206610569
-        // The barrier should be deduplicated and have only one "out" link
-        GHResponse rsp = hopper.route(new GHRequest(42.6017641, 1.6878903, 42.601616, 1.687888).setProfile(profile)
-                .setPathDetails(Collections.singletonList("intersection")));
-
-        ObjectNode json = NavigateResponseConverter.convertFromGHResponse(rsp, trMap, Locale.ENGLISH, distanceConfig);
-
-        JsonNode steps = json.get("routes").get(0).get("legs").get(0).get("steps");
-        // expecting an departure and arrival node
-        assertEquals(steps.size(), 2);
-        JsonNode step = steps.get(0);
-        JsonNode intersections = step.get("intersections");
-        assertEquals(intersections.size(), 1);
-        JsonNode intersection = intersections.get(0);
-
-        // Departure should have only one out node, even for a barrier!
-        assertEquals(0, intersection.get("out").asInt());
-        assertEquals(null, intersection.get("in"));
-        JsonNode location = intersection.get("location");
-        // The location of the barrier
-        assertEquals(location.get(0).asDouble(), 1.687890, .000001);
-        assertEquals(location.get(1).asDouble(), 42.601764, .000001);
-
-        JsonNode bearings = intersection.get("bearings");
-
-        double outBearing = bearings.get(0).asDouble();
-
-        // and these should be the bearing
-        assertEquals(171, outBearing);
-
-        // Second step has an arrival intersection, with one in no out
-        // The location of the arrival intersection should be different from barrier
-        JsonNode step2 = steps.get(1);
-        JsonNode intersections2 = step2.get("intersections");
-        assertEquals(intersections2.size(), 1);
-        JsonNode intersection2 = intersections2.get(0);
-
-        JsonNode location2 = intersection2.get("location");
-
-        assertNotEquals(location.get(0).asDouble(), location2.get(0).asDouble(), .0000001);
-        assertNotEquals(location.get(1).asDouble(), location2.get(1).asDouble(), .0000001);
-        // checking order of entries
-        assertEquals(0, intersection2.get("in").asInt());
-        assertEquals(null, intersection2.get("out"));
-
-    }
-
-    @Test
-    public void testMultipleWaypoints() {
-
-        GHRequest request = new GHRequest();
-        request.addPoint(new GHPoint(42.504606, 1.522438));
-        request.addPoint(new GHPoint(42.504776, 1.527209));
-        request.addPoint(new GHPoint(42.505144, 1.526113));
-        request.addPoint(new GHPoint(42.50529, 1.527218));
-        request.setProfile(profile).setPathDetails(Collections.singletonList("intersection"));
-
-        GHResponse rsp = hopper.route(request);
-
-        ObjectNode json = NavigateResponseConverter.convertFromGHResponse(rsp, trMap, Locale.ENGLISH, distanceConfig);
-
-        // Check that all waypoints are there and in the right order
-        JsonNode waypointsJson = json.get("waypoints");
-        assertEquals(4, waypointsJson.size());
-
-        JsonNode waypointLoc = waypointsJson.get(0).get("location");
-        assertEquals(1.522438, waypointLoc.get(0).asDouble(), .00001);
-
-        waypointLoc = waypointsJson.get(1).get("location");
-        assertEquals(1.527209, waypointLoc.get(0).asDouble(), .00001);
-
-        waypointLoc = waypointsJson.get(2).get("location");
-        assertEquals(1.526113, waypointLoc.get(0).asDouble(), .00001);
-
-        waypointLoc = waypointsJson.get(3).get("location");
-        assertEquals(1.527218, waypointLoc.get(0).asDouble(), .00001);
-
-        // Check that there are 3 legs
-        JsonNode route = json.get("routes").get(0);
-        JsonNode legs = route.get("legs");
-        assertEquals(3, legs.size());
-
-        double duration = 0;
-        double distance = 0;
-
-        for (int i = 0; i < 3; i++) {
-            JsonNode leg = legs.get(i);
-
-            duration += leg.get("duration").asDouble();
-            distance += leg.get("distance").asDouble();
-
-            JsonNode steps = leg.get("steps");
-            JsonNode step = steps.get(0);
-            JsonNode maneuver = step.get("maneuver");
-            assertEquals("depart", maneuver.get("type").asText());
-
-            maneuver = steps.get(steps.size() - 1).get("maneuver");
-            assertEquals("arrive", maneuver.get("type").asText());
-
-            JsonNode lastStep = steps.get(steps.size() - 1); // last step
-            JsonNode intersections = lastStep.get("intersections");
-            assertNotEquals(intersections, null);
-        }
-
-        // Check if the duration and distance of the legs sum up to the overall route
-        // distance and duration
-        assertEquals(route.get("duration").asDouble(), duration, 1);
-        assertEquals(route.get("distance").asDouble(), distance, 1);
-    }
-
-    @Test
-    public void testError() {
-        GHResponse rsp = hopper.route(new GHRequest(42.554851, 111.536198, 42.510071, 1.548128).setProfile(profile));
-
-        ObjectNode json = NavigateResponseConverter.convertFromGHResponseError(rsp);
-
-        assertEquals("InvalidInput", json.get("code").asText());
-        assertTrue(json.get("message").asText().startsWith("Point 0 is out of bounds: 42.554851,111.536198"));
-    }
+//    @Test
+//    public void startAtBarrierTest() {
+//        // Start the route exactly at the barrier
+//        // https://www.openstreetmap.org/node/2206610569
+//        // The barrier should be deduplicated and have only one "out" link
+//        GHResponse rsp = hopper.route(new GHRequest(42.6017641, 1.6878903, 42.601616, 1.687888).setProfile(profile)
+//                .setPathDetails(Collections.singletonList("intersection")));
+//
+//        ObjectNode json = NavigateResponseConverter.convertFromGHResponse(rsp, trMap, Locale.ENGLISH, distanceConfig);
+//
+//        JsonNode steps = json.get("routes").get(0).get("legs").get(0).get("steps");
+//        // expecting an departure and arrival node
+//        assertEquals(steps.size(), 2);
+//        JsonNode step = steps.get(0);
+//        JsonNode intersections = step.get("intersections");
+//        assertEquals(intersections.size(), 1);
+//        JsonNode intersection = intersections.get(0);
+//
+//        // Departure should have only one out node, even for a barrier!
+//        assertEquals(0, intersection.get("out").asInt());
+//        assertEquals(null, intersection.get("in"));
+//        JsonNode location = intersection.get("location");
+//        // The location of the barrier
+//        assertEquals(location.get(0).asDouble(), 1.687890, .000001);
+//        assertEquals(location.get(1).asDouble(), 42.601764, .000001);
+//
+//        JsonNode bearings = intersection.get("bearings");
+//
+//        double outBearing = bearings.get(0).asDouble();
+//
+//        // and these should be the bearing
+//        assertEquals(171, outBearing);
+//
+//        // Second step has an arrival intersection, with one in no out
+//        // The location of the arrival intersection should be different from barrier
+//        JsonNode step2 = steps.get(1);
+//        JsonNode intersections2 = step2.get("intersections");
+//        assertEquals(intersections2.size(), 1);
+//        JsonNode intersection2 = intersections2.get(0);
+//
+//        JsonNode location2 = intersection2.get("location");
+//
+//        assertNotEquals(location.get(0).asDouble(), location2.get(0).asDouble(), .0000001);
+//        assertNotEquals(location.get(1).asDouble(), location2.get(1).asDouble(), .0000001);
+//        // checking order of entries
+//        assertEquals(0, intersection2.get("in").asInt());
+//        assertEquals(null, intersection2.get("out"));
+//
+//    }
+//
+//    @Test
+//    public void testMultipleWaypoints() {
+//
+//        GHRequest request = new GHRequest();
+//        request.addPoint(new GHPoint(42.504606, 1.522438));
+//        request.addPoint(new GHPoint(42.504776, 1.527209));
+//        request.addPoint(new GHPoint(42.505144, 1.526113));
+//        request.addPoint(new GHPoint(42.50529, 1.527218));
+//        request.setProfile(profile).setPathDetails(Collections.singletonList("intersection"));
+//
+//        GHResponse rsp = hopper.route(request);
+//
+//        ObjectNode json = NavigateResponseConverter.convertFromGHResponse(rsp, trMap, Locale.ENGLISH, distanceConfig);
+//
+//        // Check that all waypoints are there and in the right order
+//        JsonNode waypointsJson = json.get("waypoints");
+//        assertEquals(4, waypointsJson.size());
+//
+//        JsonNode waypointLoc = waypointsJson.get(0).get("location");
+//        assertEquals(1.522438, waypointLoc.get(0).asDouble(), .00001);
+//
+//        waypointLoc = waypointsJson.get(1).get("location");
+//        assertEquals(1.527209, waypointLoc.get(0).asDouble(), .00001);
+//
+//        waypointLoc = waypointsJson.get(2).get("location");
+//        assertEquals(1.526113, waypointLoc.get(0).asDouble(), .00001);
+//
+//        waypointLoc = waypointsJson.get(3).get("location");
+//        assertEquals(1.527218, waypointLoc.get(0).asDouble(), .00001);
+//
+//        // Check that there are 3 legs
+//        JsonNode route = json.get("routes").get(0);
+//        JsonNode legs = route.get("legs");
+//        assertEquals(3, legs.size());
+//
+//        double duration = 0;
+//        double distance = 0;
+//
+//        for (int i = 0; i < 3; i++) {
+//            JsonNode leg = legs.get(i);
+//
+//            duration += leg.get("duration").asDouble();
+//            distance += leg.get("distance").asDouble();
+//
+//            JsonNode steps = leg.get("steps");
+//            JsonNode step = steps.get(0);
+//            JsonNode maneuver = step.get("maneuver");
+//            assertEquals("depart", maneuver.get("type").asText());
+//
+//            maneuver = steps.get(steps.size() - 1).get("maneuver");
+//            assertEquals("arrive", maneuver.get("type").asText());
+//
+//            JsonNode lastStep = steps.get(steps.size() - 1); // last step
+//            JsonNode intersections = lastStep.get("intersections");
+//            assertNotEquals(intersections, null);
+//        }
+//
+//        // Check if the duration and distance of the legs sum up to the overall route
+//        // distance and duration
+//        assertEquals(route.get("duration").asDouble(), duration, 1);
+//        assertEquals(route.get("distance").asDouble(), distance, 1);
+//    }
+//
+//    @Test
+//    public void testError() {
+//        GHResponse rsp = hopper.route(new GHRequest(42.554851, 111.536198, 42.510071, 1.548128).setProfile(profile));
+//
+//        ObjectNode json = NavigateResponseConverter.convertFromGHResponseError(rsp);
+//
+//        assertEquals("InvalidInput", json.get("code").asText());
+//        assertTrue(json.get("message").asText().startsWith("Point 0 is out of bounds: 42.554851,111.536198"));
+//    }
 
 }
