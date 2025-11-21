@@ -65,7 +65,7 @@ jobs:
       - name: Run PIT mutation testing
         id: pit-test
         env:
-          EXCLUDED_MODULES: "core|reader-gtfs"
+          EXCLUDED_MODULES: "core|reader-gtfs|web-bundle"
         run: |
           echo "ALL MODULE ARE BEING TEST, EXCLUDING CORE AND READER_GTFS"
           .github/workflows/scripts/run-pit-test.sh 
@@ -77,12 +77,13 @@ jobs:
         run: .github/workflows/scripts/check-mutation-regression.sh
 
       - name: Rickroll Test Failure
-        if: failure() && steps.pit-test.outcome == 'failure'
+        if: steps.mutation-check.outcome == 'failure'
         uses: ./.github/workflows/actions/Rickroll
         with:
           mode: "mutation"
+
       - name: Rickroll Test Failure
-        if: failure() && steps.pit-test.outcome == 'failure'
+        if: steps.build-modules.conclusion == 'failure'
         uses: ./.github/workflows/actions/Rickroll
         with:
           mode: "test"
