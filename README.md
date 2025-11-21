@@ -93,14 +93,11 @@ Un simple *push* sans modification déclenche la génération :
 
 | Module        | Score courant | Score précédent | Status    |
 |---------------|---------------|-----------------|-----------|
-| client-hc     | —             | —               | Baseline  |
-| example       | —             | —               | Baseline  |
-| map-matching  | —             | —               | Baseline  |
-| navigation    | —             | —               | Baseline  |
-| tools         | —             | —               | Baseline  |
-| web           | —             | —               | Baseline  |
-| web-api       | —             | —               | Baseline  |
-| web-bundle    | —             | —               | Baseline  |
+| client-hc     | 38.99%        | —               | Baseline  |
+| example       | 43.10%        | —               | Baseline  |
+| navigation    | 60.56%        | —               | Baseline  |
+| web           | 35.68%        | —               | Baseline  |
+| web-api       | 34.48%        | —               | Baseline  |
 
 ### Capture du pipeline (Run 1)
 ![Run 1 Status](run1.jpeg)

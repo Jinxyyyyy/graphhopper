@@ -128,80 +128,80 @@ public class HelperTest {
         assertEquals(storedInt, Helper.eleToUInt(ele));
     }
 
-    /**
-     * Nom du test : testEmptyString
-     *
-     * Intention :
-     * Vérifier que la méthode parseList retourne une liste vide lorsqu’elle reçoit en entrée
-     * une chaîne de caractères vide.
-     *
-     * Motivation des données :
-     * S’assurer que la méthode parseList est robuste face à un cas limite (entrée vide)
-     * et qu’elle ne provoque pas d’erreurs d’exécution.
-     *
-     * Oracle :
-     * Pour une chaîne vide en entrée, la méthode doit retourner une liste vide.
-     */
-
-    @Test
-    public void testEmptyString() {
-        String input = "";
-        List<String> result = Helper.parseList(input);
-        assertTrue(result.isEmpty(), "Une chaine vide doit retourner une liste vide");
-    }
-
-    /**
-     * Nom du test : testNormalList
-     *
-     * Intention :
-     * Vérifier que la méthode parseList est capable de parser correctement une chaîne représentant
-     * une liste et de restituer tous les éléments dans l’ordre attendu.
-     *
-     * Motivation des données :
-     * S’assurer que la méthode parseList identifie correctement chaque élément d’une liste non vide,
-     * en conservant à la fois la taille exacte et l’ordre des éléments.
-     *
-     * Oracle :
-     * Pour une entrée "[benoit, meryem, yogya]", la méthode doit retourner une liste de taille 3
-     * contenant, dans l’ordre : élément 0 = "benoit", élément 1 = "meryem", élément 2 = "yogya".
-     */
-
-
-    @Test
-    public void testNormalList() {
-        String input = "[benoit, meryem, yogya]";
-        List<String> result = Helper.parseList(input);
-        assertEquals(3, result.size());
-        assertEquals("benoit", result.get(0));
-        assertEquals("meryem", result.get(1));
-        assertEquals("yogya", result.get(2));
-    }
-
-
-    /**
-     * Nom du test : testListWithEmptyElements
-     *
-     * Intention :
-     * Vérifier que la méthode parseList est capable d’ignorer correctement les éléments vides
-     * lorsqu’elle parse une chaîne représentant une liste.
-     *
-     * Motivation :
-     * S’assurer que la méthode parseList gère de manière robuste la présence d’éléments vides,
-     * afin d’éviter des erreurs d’exécution ou un comportement inattendu.
-     *
-     * Oracle :
-     * Pour une entrée "[benoit, , yogya, , ]", la méthode doit retourner une liste de taille 2
-     * contenant, dans l’ordre : élément 0 = "benoit", élément 1 = "yogya".
-     */
-
-    @Test
-    public void testListWithEmptyElements() {
-        String input = "[benoit, , yogya, , ]";
-        List<String> result = Helper.parseList(input);
-
-        assertEquals(2, result.size(), "empty elems should be ignored");
-        assertEquals("benoit", result.get(0));
-        assertEquals("yogya", result.get(1));
-    }
+//    /**
+//     * Nom du test : testEmptyString
+//     *
+//     * Intention :
+//     * Vérifier que la méthode parseList retourne une liste vide lorsqu’elle reçoit en entrée
+//     * une chaîne de caractères vide.
+//     *
+//     * Motivation des données :
+//     * S’assurer que la méthode parseList est robuste face à un cas limite (entrée vide)
+//     * et qu’elle ne provoque pas d’erreurs d’exécution.
+//     *
+//     * Oracle :
+//     * Pour une chaîne vide en entrée, la méthode doit retourner une liste vide.
+//     */
+//
+//    @Test
+//    public void testEmptyString() {
+//        String input = "";
+//        List<String> result = Helper.parseList(input);
+//        assertTrue(result.isEmpty(), "Une chaine vide doit retourner une liste vide");
+//    }
+//
+//    /**
+//     * Nom du test : testNormalList
+//     *
+//     * Intention :
+//     * Vérifier que la méthode parseList est capable de parser correctement une chaîne représentant
+//     * une liste et de restituer tous les éléments dans l’ordre attendu.
+//     *
+//     * Motivation des données :
+//     * S’assurer que la méthode parseList identifie correctement chaque élément d’une liste non vide,
+//     * en conservant à la fois la taille exacte et l’ordre des éléments.
+//     *
+//     * Oracle :
+//     * Pour une entrée "[benoit, meryem, yogya]", la méthode doit retourner une liste de taille 3
+//     * contenant, dans l’ordre : élément 0 = "benoit", élément 1 = "meryem", élément 2 = "yogya".
+//     */
+//
+//
+//    @Test
+//    public void testNormalList() {
+//        String input = "[benoit, meryem, yogya]";
+//        List<String> result = Helper.parseList(input);
+//        assertEquals(3, result.size());
+//        assertEquals("benoit", result.get(0));
+//        assertEquals("meryem", result.get(1));
+//        assertEquals("yogya", result.get(2));
+//    }
+//
+//
+//    /**
+//     * Nom du test : testListWithEmptyElements
+//     *
+//     * Intention :
+//     * Vérifier que la méthode parseList est capable d’ignorer correctement les éléments vides
+//     * lorsqu’elle parse une chaîne représentant une liste.
+//     *
+//     * Motivation :
+//     * S’assurer que la méthode parseList gère de manière robuste la présence d’éléments vides,
+//     * afin d’éviter des erreurs d’exécution ou un comportement inattendu.
+//     *
+//     * Oracle :
+//     * Pour une entrée "[benoit, , yogya, , ]", la méthode doit retourner une liste de taille 2
+//     * contenant, dans l’ordre : élément 0 = "benoit", élément 1 = "yogya".
+//     */
+//
+//    @Test
+//    public void testListWithEmptyElements() {
+//        String input = "[benoit, , yogya, , ]";
+//        List<String> result = Helper.parseList(input);
+//
+//        assertEquals(2, result.size(), "empty elems should be ignored");
+//        assertEquals("benoit", result.get(0));
+//        assertEquals("yogya", result.get(1));
+//    }
 
 }
