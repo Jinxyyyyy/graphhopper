@@ -77,18 +77,12 @@ jobs:
         run: .github/workflows/scripts/check-mutation-regression.sh
 
       - name: Rickroll Test Failure
-        if: steps.mutation-check.outcome == 'failure'
-        uses: ./.github/workflows/actions/Rickroll
-        with:
-          mode: "mutation"
-
-      - name: Rickroll Test Failure
-        if: steps.build-modules.conclusion == 'failure'
+        if: failure()
         uses: ./.github/workflows/actions/Rickroll
         with:
           mode: "test"
 
-      - name: Rickroll Summary
+      - name: Rickroll
         if: failure()
         run: |
           {

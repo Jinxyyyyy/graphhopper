@@ -34,7 +34,7 @@ https://github.com/Jinxyyyyy/graphhopper/blob/7c99ffcd0e1d5c6e742649501658516e11
 
 Il y a 2 points importants dans la logique d'exécution. 
 
-1- Les modules CORE et READER-GTFS sont exclus. Les tests de mutations n'achèvent jamais, possiblement à cause de boucles infinis.
+1- Les modules CORE, READER-GTFS et WEB-BUNDLE sont exclus. Les tests de mutations n'achèvent jamais, possiblement à cause de boucles infinis.
 
 2- Les paramètres `-DreportsDirectory=target/pit-reports -DoutputFormats=XML,HTML` permettent de générer un rapport dans les répertoires `target/pit-reports/mutations.xml`et `target/pit-reports/index.html`. `mutations.xml`sera nécessaire pour évaluer la régression des scores de mutations. 
 
@@ -112,12 +112,12 @@ Cette suppression entraîne donc mécaniquement une baisse, permettant de valide
 ### Tableau des scores (Run 2)
 
 | Module        | Score courant | Score précédent | Status     |
-|---------------|---------------|-----------------|------------|
-| client-hc     | 38.99%        | 38.99%          | Unchanged  |
-| example       | 43.10%        | 43.10%          | Unchanged  |
-| navigation    | 60.56%        | 60.56%          | Unchanged  |
-| web           | 35.68%        | 34.47%          | Regression |
-| web-api       | 34.48%        | 34.48%          | Unchanged  |
+|---------------|--------------|-----------------|------------|
+| client-hc     | 38.99%       | 38.99%          | Unchanged  |
+| example       | 43.10%       | 43.10%          | Unchanged  |
+| navigation    | 60.56%       | 60.56%          | Unchanged  |
+| web           | 34.47%       | 35.68%         | Regression |
+| web-api       | 34.48%       | 34.48%          | Unchanged  |
 
 
 On observe une réduction de 1,21% sur le module web-api, le module ciblé. Le run **Build, Test & PIT #52 (force mutation on web-api)** échoue. Cela valide que la méthode fonctionne sur un module spécifique.  
@@ -135,32 +135,16 @@ Cette étape valide que :
 
 ### Tableau des scores (Run 3 — Régression multiple)
 
-| Module        | Score courant | Score précédent | Status                   |
-|---------------|---------------|-----------------|--------------------------|
-| client-hc     | —             | —               | —                        |
-| example       | —             | —               | —                        |
-| map-matching  | —             | —               | —                        |
-| navigation    | —             | —               | —                        |
-| tools         | —             | —               | —                        |
-| web           | —             | —               | —                        |
-| web-api       | —             | —               | —                        |
-| web-bundle    | —             | —               | Regression / Unchanged / Improved |
 
-### Capture du pipeline (Run 3 — Failure attendu)
-![Run 3 Status](run3.jpeg)
+| Module        | Score courant | Score précédent | Status     |
+|---------------|---------------|-----------------|------------|
+| client-hc     | 36.33%        | 38.99%          | Regression |
+| example       | 12.06%        | 43.10%          | Regression |
+| navigation    | 57.27%        | 60.56%          | Regression |
+| web           | 34.47%        | 35.68%          | Regression |
+| web-api       | 34.48%        | 34.48%          | Unchanged  |
 
----
-
-### Conclusion de la validation
-
-Sur l’ensemble des trois exécutions :
-
-- la baseline est correctement établie (Run 1),
-- une régression ciblée est bien détectée et fait échouer le pipeline (Run 2),
-- plusieurs régressions simultanées sont également correctement prises en compte (Run 3).
-
-Le système de validation mis en place se comporte donc comme prévu :  
-**toute baisse du score de mutation entraîne automatiquement un échec du build GitHub Actions.**
+On observe des baisses dans 3 modules additionnels. le run **Build, Test & PIT #53(force random mutation regression)** échoue. Cela confirme que la méthode fonctionne correctement lorsqu'il y a des regressions multiples. 
 
 ---
 ---
