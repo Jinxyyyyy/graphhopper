@@ -1,0 +1,14 @@
+name: "Rickroll"
+description: "Rickroll when tests fail"
+
+inputs:
+  mode:
+    required: true
+    description: "mutation or test"
+
+runs:
+  using: "composite"
+  steps:
+    - run: |
+        bash "${{ github.action_path }}/rickroll.sh" "${{ inputs.mode }}"
+      shell: bash
