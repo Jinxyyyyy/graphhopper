@@ -1,4 +1,4 @@
-name: Build, Test and PIT
+name: Build, Test & PIT
 on: push
 
 jobs:
@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java-version: [17]
+        java-version: [24, 25-ea]
       fail-fast: false
 
     steps:
@@ -47,154 +47,64 @@ jobs:
       - name: Install tools
         run: sudo apt-get update && sudo apt-get install -y bc libxml2-utils
 
+      - name: Make scripts executable
+        run: chmod +x .github/workflows/scripts/*.sh
+
       # Téléchargement des scores PIT du run précédent
       - name: Download previous PIT scores
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "=== Attempting to download previous PIT scores ==="
-          
-          # Télécharge l'artifact du dernier run réussi sur cette branche
-          gh run list \
-            --workflow="${{ github.workflow }}" \
-            --branch="${{ github.ref_name }}" \
-            --status=success \
-            --limit=5 \
-            --json databaseId \
-            --jq '.[].databaseId' | while read run_id; do
-          
-            echo "Checking run #$run_id for artifacts..."
-          
-            if gh run download "$run_id" \
-              --name pit-scores-baseline \
-              --dir . 2>/dev/null; then
-              echo "Successfully downloaded scores from run #$run_id"
-              exit 0
-            fi
-          done
-          
-          echo "No previous scores found (this is normal for the first run)"
-
-      - name: List downloaded scores
-        run: |
-          echo "=== Previous scores status ==="
-          if ls pit-score-*.txt 1> /dev/null 2>&1; then
-            echo "Found previous scores:"
-            ls -la pit-score-*.txt
-          else
-            echo "No previous scores (baseline will be set)"
-          fi
+          .github/workflows/scripts/download-pit-scores.sh \
+          "${{ github.workflow }}" \
+          "${{ github.ref_name }}" \
 
       - name: Build all modules
-        run: mvn -B clean install -DskipTests -Djacoco.skip=true
+        run: mvn -B clean install -Djacoco.skip=false
 
-      # Détection des modules Maven modifiés
-      - name: Detect changed Maven modules
-        id: changed
-        uses: tj-actions/changed-files@v44
-        with:
-          files: |
-            **/pom.xml
-            **/src/**
-
-      - name: Compute module list
-        id: modules
+      - name: Run PIT mutation testing
+        id: pit-test
+        env:
+          EXCLUDED_MODULES: "core|reader-gtfs"
         run: |
-          MODULES=$(echo "${{ steps.changed.outputs.all_changed_files }}" \
-            | grep -E '^(core|web|web-api|reader-gtfs|map-matching|tools|client-hc|navigation|example)' \
-            | cut -d'/' -f1 | sort -u | tr '\n' ',' | sed 's/,$//')
+          echo "ALL MODULE ARE BEING TEST, EXCLUDING CORE AND READER_GTFS"
+          .github/workflows/scripts/run-pit-test.sh 
 
-          if [ -z "$MODULES" ]; then
-            echo "No modules changed. Running full build."
-            echo "modules=" >> $GITHUB_OUTPUT
-          else
-            echo "Changed modules: $MODULES"
-            echo "modules=$MODULES" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Run PIT mutation testing (selective)
-        if: steps.modules.outputs.modules != ''
-        run: |
-          mvn -B org.pitest:pitest-maven:mutationCoverage \
-            -pl ${{ steps.modules.outputs.modules }} \
-            -DtargetClasses='com.graphhopper.*' \
-            -DtargetTests='com.graphhopper.*Test' \
-            -DreportsDirectory=target/pit-reports \
-            -DoutputFormats=XML,HTML \
-            -DtimestampedReports=false \
-            -DjvmArgs='-Xmx6G'
-
-      - name: Run PIT mutation testing (full)
-        if: steps.modules.outputs.modules == ''
-        run: |
-          # Construire dynamiquement la liste des modules sauf core et reader-gtfs
-          ALL_MODULES=$(ls -d */pom.xml | cut -d'/' -f1 | grep -Ev '^(core|reader-gtfs|web)$' | tr '\n' ',' | sed 's/,$//')
-          echo "Running PIT on modules: $ALL_MODULES"
-
-          mvn -B org.pitest:pitest-maven:mutationCoverage \
-            -pl $ALL_MODULES \
-            -DtargetClasses='com.graphhopper.*' \
-            -DtargetTests='com.graphhopper.*Test' \
-            -DreportsDirectory=target/pit-reports \
-            -DoutputFormats=XML,HTML \
-            -DtimestampedReports=false \
-            -Dthreads=2 \
-            -DjvmArgs='-Xmx6G' \
-            -DtimeoutConstant=60000 \
-            -DtimeoutFactor=2 \
-            -DdependencyDistance=0 \
-            -DfailWhenNoMutations=false \
-
+        # "${{ steps.modules.outputs.modules }}"
 
       # Vérification des scores de mutation par module
       - name: Check mutation coverage regression
+        id: mutation-check
+        run: .github/workflows/scripts/check-mutation-regression.sh
+
+      - name: Rickroll Test Failure
+        if: failure() && steps.pit-test.outcome == 'failure'
+        uses: ./.github/workflows/actions/Rickroll
+        with:
+          mode: "mutation"
+      - name: Rickroll Test Failure
+        if: failure() && steps.pit-test.outcome == 'failure'
+        uses: ./.github/workflows/actions/Rickroll
+        with:
+          mode: "test"
+
+      - name: Rickroll Summary
+        if: failure()
         run: |
-          echo "=== Checking mutation score regression ==="
-          failed=false
-          
-          for file in $(find . -name "mutations.xml"); do
-            module=$(echo "$file" | sed 's|^\./||' | cut -d'/' -f1)
-          
-            # Compte les mutations totales et détectées
-            total=$(xmllint --xpath "count(//mutation)" "$file")
-            killed=$(xmllint --xpath "count(//mutation[@detected='true'])" "$file")
-          
-            if [ "$total" -eq 0 ]; then
-              echo "$module: No mutations found (skipped)"
-              continue
-            fi
-          
-            coverage=$(echo "scale=2; 100 * $killed / $total" | bc -l)
-            echo "$module: ${coverage}% ($killed/$total mutations killed)"
-          
-            # Vérifie si un score précédent existe
-            old_file="pit-score-${module}.txt"
-            if [ -f "$old_file" ]; then
-              old=$(cat "$old_file")
-              echo "   Previous: ${old}%"
-          
-              if (( $(echo "$coverage < $old" | bc -l) )); then
-                echo "REGRESSION: Mutation score decreased for $module (${coverage}% < ${old}%)"
-                failed=true
-              else
-                echo "OK: Score maintained or improved"
-              fi
-            else
-              echo "   (No previous score - baseline set)"
-            fi
-          
-            # Sauvegarde le nouveau score
-            echo "$coverage" > "$old_file"
-          done
-          
-          if [ "$failed" = true ]; then
+          {
+            echo "# YOU GOT RICKROLLED!"
             echo ""
-            echo "Build failed: one or more modules lost mutation coverage."
-            exit 1
-          else
+            echo "![Rickroll](https://media.giphy.com/media/Vuw9m5wXviFIQ/giphy.gif)"
             echo ""
-            echo "All modules maintained or improved mutation coverage."
-          fi
+
+            if [ "${{ steps.mutation-check.outcome }}" = "failure" ]; then
+              echo "## Mutation Coverage Regression Detected!"
+              echo "Never gonna let those mutants survive!"
+            elif [ "${{ steps.pit-test.outcome }}" = "failure" ]; then
+              echo "## Test Failure Detected!"
+              echo "Never gonna let your tests run around and desert you!"
+            fi
+          } >> $GITHUB_STEP_SUMMARY
 
       # Upload des scores comme artifact (baseline pour le prochain run)
       - name: Upload PIT scores baseline
