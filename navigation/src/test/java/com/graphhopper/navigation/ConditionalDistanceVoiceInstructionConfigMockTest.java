@@ -11,11 +11,23 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
+/**
+ * Tests unitaires pour {@link ConditionalDistanceVoiceInstructionConfig} utilisant des mocks
+ * pour {@link TranslationMap} et {@link com.graphhopper.util.Translation}.
+ * Ces tests vérifient que la méthode {@link ConditionalDistanceVoiceInstructionConfig#getConfigForDistance}
+ * renvoie correctement un {@link VoiceInstructionConfig.VoiceInstructionValue} pour différentes distances
+ * ou renvoie null lorsque la distance est inférieure au seuil minimal.
+ */
+
 class ConditionalDistanceVoiceInstructionConfigMockTest {
-
+/** Mock de TranslationMap utilisé pour injecter dans ConditionalDistanceVoiceInstructionConfig. */
     private TranslationMap mockTranslationMap;
+        /** Mock de Translation utilisé pour éviter les NullPointerException. */
     private com.graphhopper.util.Translation mockTranslation;
-
+     /**
+     * Initialise les mocks avant chaque test.
+     * Configure TranslationMap et Translation pour toujours retourner une valeur “dummy”.
+     */
     @BeforeEach
     void setUp() {
         // Mock TranslationMap and Translation to isolate the class
@@ -24,7 +36,15 @@ class ConditionalDistanceVoiceInstructionConfigMockTest {
         when(mockTranslationMap.getWithFallBack(any(Locale.class))).thenReturn(mockTranslation);
         when(mockTranslation.tr(anyString(), any())).thenReturn("dummy"); // Always return "dummy" for translation
     }
-
+    /**
+     * Test que {@link ConditionalDistanceVoiceInstructionConfig#getConfigForDistance}
+     * renvoie un {@link VoiceInstructionConfig.VoiceInstructionValue} correct pour une distance
+     * située entre deux seuils.
+     * Vérifie que :
+     *   La valeur renvoyée n’est pas nulle
+     *   Le spokenDistance correspond au seuil approprié
+     *   La description contient le texte du virage
+     */
     @Test
     void testGetConfigForDistance_returnsCorrectInstruction() {
         int[] geometryDistances = {50, 100, 150};
@@ -36,7 +56,6 @@ class ConditionalDistanceVoiceInstructionConfigMockTest {
                         geometryDistances, voiceValues
                 );
 
-        // Test a distance that should pick the 100m instruction
         VoiceInstructionConfig.VoiceInstructionValue value =
                 config.getConfigForDistance(120, "turn right", "");
         
@@ -44,7 +63,11 @@ class ConditionalDistanceVoiceInstructionConfigMockTest {
         assertEquals(50, value.spokenDistance, "Spoken distance should match the fitting distance");
         assertTrue(value.turnDescription.contains("turn right"), "Description should include the turn");
     }
-
+    /**
+     * Test que {@link ConditionalDistanceVoiceInstructionConfig#getConfigForDistance}
+     * renvoie null lorsqu’une distance inférieure au premier seuil est donnée.
+     * Vérifie que la méthode ne génère pas d’instruction vocale pour des distances trop courtes.
+     */
     @Test
     void testGetConfigForDistance_returnsNullForTooShortDistance() {
         int[] geometryDistances = {50, 100, 150};
