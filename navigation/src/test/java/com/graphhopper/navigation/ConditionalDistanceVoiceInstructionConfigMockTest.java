@@ -30,11 +30,11 @@ class ConditionalDistanceVoiceInstructionConfigMockTest {
      */
     @BeforeEach
     void setUp() {
-        // Mock TranslationMap and Translation to isolate the class
+        // Section pour les mocks en guise de preparation
         mockTranslationMap = mock(TranslationMap.class);
         mockTranslation = mock(com.graphhopper.util.Translation.class);
         when(mockTranslationMap.getWithFallBack(any(Locale.class))).thenReturn(mockTranslation);
-        when(mockTranslation.tr(anyString(), any())).thenReturn("dummy"); // Always return "dummy" for translation
+        when(mockTranslation.tr(anyString(), any())).thenReturn("dummy"); 
     }
     /**
      * Test que {@link ConditionalDistanceVoiceInstructionConfig#getConfigForDistance}
@@ -79,7 +79,6 @@ class ConditionalDistanceVoiceInstructionConfigMockTest {
                         geometryDistances, voiceValues
                 );
 
-        // Distance below the first threshold
         VoiceInstructionConfig.VoiceInstructionValue value =
                 config.getConfigForDistance(30, "turn left", "");
         
