@@ -65,12 +65,11 @@ jobs:
       - name: Run PIT mutation testing
         id: pit-test
         env:
-          EXCLUDED_MODULES: "core|reader-gtfs|web-bundle"
+          EXCLUDED_MODULES: "core|reader-gtfs"
         run: |
           echo "ALL MODULE ARE BEING TEST, EXCLUDING CORE AND READER_GTFS"
           .github/workflows/scripts/run-pit-test.sh 
 
-        # "${{ steps.modules.outputs.modules }}"
 
       # Vérification des scores de mutation par module
       - name: Check mutation coverage regression
