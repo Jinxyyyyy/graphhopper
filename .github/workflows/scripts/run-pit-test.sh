@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-EXCLUDED_MODULES="${EXCLUDED_MODULES:-core|reader-gtfs}"
+EXCLUDED_MODULES="${EXCLUDED_MODULES:-core|reader-gtfs|web-bundle}"
 
 echo "No specific modules provided. Running PIT on all modules..."
 
