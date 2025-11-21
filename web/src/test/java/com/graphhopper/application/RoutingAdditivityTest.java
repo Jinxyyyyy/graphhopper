@@ -59,35 +59,35 @@ public class RoutingAdditivityTest {
         graphHopper = null;
     }
 
-//    @Test
-//    public void testBoundedAdditivityOfGraphhopperTravelTimes() {
-//        ResponsePath route1 = graphHopper.route(new GHRequest(
-//                new GHPoint(51.23, 12.18),
-//                new GHPoint(51.45, 12.59))
-//                .setProfile("my_profile")).getBest();
-//
-//        // Re-route from snapped point to snapped point.
-//        // It's the only way to be sure.
-//        ResponsePath route2 = graphHopper.route(new GHRequest(
-//                route1.getWaypoints().get(0),
-//                route1.getWaypoints().get(1))
-//                .setProfile("my_profile")).getBest();
-//
-//        assertThat(route1.getTime(), is(equalTo(route2.getTime())));
-//
-//        long travelTime = 0L;
-//        for (int i = 0; i < route2.getPoints().size() - 1; i++) {
-//            ResponsePath segment = graphHopper.route(new GHRequest(
-//                    route2.getPoints().get(i),
-//                    route2.getPoints().get(i + 1))
-//                    .setProfile("my_profile")).getBest();
-//            travelTime += segment.getTime();
-//        }
-//
-//        // Even though I route from node to node, and travel times are longs, not doubles,
-//        // I apparently don't get the exact result if I sum up the travel times between segments.
-//        // But it's within one second.
-//        assertThat(Math.abs(travelTime - route2.getTime()), is(lessThan(1000L)));
-//    }
+    @Test
+    public void testBoundedAdditivityOfGraphhopperTravelTimes() {
+        ResponsePath route1 = graphHopper.route(new GHRequest(
+                new GHPoint(51.23, 12.18),
+                new GHPoint(51.45, 12.59))
+                .setProfile("my_profile")).getBest();
+
+        // Re-route from snapped point to snapped point.
+        // It's the only way to be sure.
+        ResponsePath route2 = graphHopper.route(new GHRequest(
+                route1.getWaypoints().get(0),
+                route1.getWaypoints().get(1))
+                .setProfile("my_profile")).getBest();
+
+        assertThat(route1.getTime(), is(equalTo(route2.getTime())));
+
+        long travelTime = 0L;
+        for (int i = 0; i < route2.getPoints().size() - 1; i++) {
+            ResponsePath segment = graphHopper.route(new GHRequest(
+                    route2.getPoints().get(i),
+                    route2.getPoints().get(i + 1))
+                    .setProfile("my_profile")).getBest();
+            travelTime += segment.getTime();
+        }
+
+        // Even though I route from node to node, and travel times are longs, not doubles,
+        // I apparently don't get the exact result if I sum up the travel times between segments.
+        // But it's within one second.
+        assertThat(Math.abs(travelTime - route2.getTime()), is(lessThan(1000L)));
+    }
 
 }
