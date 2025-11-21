@@ -1,9 +1,9 @@
 # Rapport tâche 3 - IFT3913A25 - Poldo Silva et Costarella-Serra
 
 
-## **Documentation GA**
+## Documentation GA
 
-## **1.Modifications apportées à l'action**
+## Modifications apportées à l'action
 L’objectif du projet est de mettre en place, au sein de GitHub Actions, un mécanisme automatique capable de faire échouer un build dès qu’une régression du score de mutation est détectée. Pour y parvenir, plusieurs éléments sont nécessaires : un score de mutation de référence (issu du build précédent), le score de mutation obtenu lors du build courant, et une méthode fiable permettant de comparer ces deux valeurs.
 
 Nous avons choisi de récupérer, pour chaque module testable du projet, le score de mutation global. Une approche plus fine, par exemple récupérer un score de mutation pour chaque classe, aurait été possible, mais elle alourdirait considérablement la suite du pipeline et complexifierait l’analyse. À l’inverse, une approche moins granulaire consistant à calculer un score global unique pour l’ensemble de GraphHopper fournirait trop peu d’informations en cas d’échec du build, rendant le diagnostic difficile pour l’utilisateur.
@@ -174,45 +174,44 @@ Sur l’ensemble des trois exécutions :
 Le système de validation mis en place se comporte donc comme prévu :  
 **toute baisse du score de mutation entraîne automatiquement un échec du build GitHub Actions.**
 
+---
+---
 
-## **Documentation mocks**
+## Documentation mocks
 
-### **1.Choix des classes**
-Les deux classes choisies sont : **DistanceConfig** et **ConditionalDistanceVoiceInstructionConfig**. On a choisi ces classes car elles ne sont pas très complexes et elles dépendent de peu d’éléments externes. Elles dépendent notamment de **TranslationMap** et de **Translation**, qui eux-mêmes n’ont pas de dépendances supplémentaires, ce qui facilite leur simulation avec des mocks.
+### 1 Choix des classes
+Les deux classes choisies sont : **[DistanceConfig.java](https://github.com/Jinxyyyyy/graphhopper/blob/badd4955b568500d9c60d9ab1ae4360e814a95c8/navigation/src/main/java/com/graphhopper/navigation/DistanceConfig.java)** et **[ConditionalDistanceVoiceInstructionConfig.java](https://github.com/Jinxyyyyy/graphhopper/blob/f8ba7958e251a3d445ebe37de0d7a9e74e5dd988/navigation/src/test/java/com/graphhopper/navigation/ConditionalDistanceVoiceInstructionConfigMockTest.java#L38-L71)**. On a choisi ces classes, car elles ne sont pas très complexes et elles dépendent de peu d’éléments externes. Elles dépendent notamment de **[TranslationMap.java](https://github.com/Jinxyyyyy/graphhopper/blob/ae10b76b82b5d7ad3b924af4682d62494d756c18/core/src/main/java/com/graphhopper/util/TranslationMap.java)** et de **[Translation.java](https://github.com/Jinxyyyyy/graphhopper/blob/1bf636ce3662025bfc00af7e586a57952ed40755/web-api/src/main/java/com/graphhopper/util/Translation.java)**, qui eux-mêmes n’ont pas de dépendances supplémentaires, ce qui facilite leur simulation avec des mocks.
 
-Initialement, nous avions essayé de créer des tests avec des mocks pour la classe **DijkstraBiDirectionCH**, mais cela s’est avéré extrêmement difficile : cette classe possède de nombreuses dépendances, elles-mêmes dépendantes d’autres classes, et l’utilisation de mocks dans ce contexte devient très complexe et peu fiable. Cette expérience nous a montré les limites des mocks pour des classes fortement imbriquées, et nous a amenés à nous concentrer sur des classes moins complexes, comme **DistanceConfig** et **ConditionalDistanceVoiceInstructionConfig**.
+Initialement, nous avions essayé de créer des tests avec des mocks pour la classe **DijkstraBiDirectionCH.java**, mais cela s’est avéré extrêmement difficile : cette classe possède de nombreuses dépendances, elles-mêmes dépendantes d’autres classes, et l’utilisation de mocks dans ce contexte devient très complexe et peu fiable. Cette expérience nous a montré les limites des mocks pour des classes fortement imbriquées, et nous a amenés à nous concentrer sur des classes moins complexes, comme **[DistanceConfig.java](https://github.com/Jinxyyyyy/graphhopper/blob/ae10b76b82b5d7ad3b924af4682d62494d756c18/navigation/src/main/java/com/graphhopper/navigation/DistanceConfig.java)** et **[ConditionalDistanceVoiceInstructionConfig.java](https://github.com/Jinxyyyyy/graphhopper/blob/f8ba7958e251a3d445ebe37de0d7a9e74e5dd988/navigation/src/test/java/com/graphhopper/navigation/ConditionalDistanceVoiceInstructionConfigMockTest.java#L38-L71)**.
 
-Ces classes sont intéressantes pour les tests avec mocks car elles contiennent une logique interne importante (gestion des distances et génération d’instructions vocales), tout en étant suffisamment isolables grâce aux mocks. Cela permet de tester précisément leur comportement sans dépendre de la configuration réelle ou des fichiers de traduction, garantissant des tests unitaires fiables et reproductibles.
+Ces classes sont intéressantes pour les tests avec mocks, car elles contiennent une logique interne importante (gestion des distances et génération d’instructions vocales), tout en étant suffisamment isolables grâce aux mocks. Cela permet de tester précisément leur comportement sans dépendre de la configuration réelle ou des fichiers de traduction, garantissant des tests unitaires fiables et reproductibles.
 
-### **2.Définition des mocks**
-Comme mentionne ci-haut on a decider de mock les classes TranslationMap et Translation dont **DistanceConfig** et **ConditionalDistanceVoiceInstructionConfig** dependant. Pour ce faire, on a defini les mock de facons suivante.
+### 2 Définition des mocks
+Comme mentionne ci-haut on a decidé de mock les classes `TranslationMap.java` et `Translation.java` dont **DistanceConfig.java** et **ConditionalDistanceVoiceInstructionConfig.java** dépendant. Pour ce faire, on a defini les mock de facons suivante.
 
-**Creation mock pour ConditionalDistanceVoiceInstructionConfig**:
-- mockTranslationMap = mock(TranslationMap.class);
-- mockTranslation = mock(com.graphhopper.util.Translation.class);
+**Creation mock pour ConditionalDistanceVoiceInstructionConfig.java**:
+https://github.com/Jinxyyyyy/graphhopper/blob/f8ba7958e251a3d445ebe37de0d7a9e74e5dd988/navigation/src/test/java/com/graphhopper/navigation/ConditionalDistanceVoiceInstructionConfigMockTest.java#L34-L35
 
 **Definition mock pour ConditionalDistanceVoiceInstructionConfig**:
-- when(mockTranslationMap.getWithFallBack(any(Locale.class))).thenReturn(mockTranslation);
-- when(mockTranslation.tr(anyString(), any())).thenReturn("dummy");
+https://github.com/Jinxyyyyy/graphhopper/blob/f8ba7958e251a3d445ebe37de0d7a9e74e5dd988/navigation/src/test/java/com/graphhopper/navigation/ConditionalDistanceVoiceInstructionConfigMockTest.java#L36-L37
 
 **Creation mock pour DistanceConfig**:
--mockTranslationMap = mock(TranslationMap.class);
-
+navigation/src/test/java/com/graphhopper/navigation/DistanceConfigMockTest.java#L32
 **Definition mock pour DistanceConfig**:
-- when(mockTranslationMap.getWithFallBack(any(Locale.class))).thenReturn(mock(com.graphhopper.util.Translation.class));
+navigation/src/test/java/com/graphhopper/navigation/DistanceConfigMockTest.java#L33-L34
 
-### **3.Changements dans les tests**
+### 3 Changements dans les tests
 
 Pour adapter les tests initiaux en utilisant des mocks, plusieurs modifications ont été apportées aux tests creer par les developpeurs de GraphHopper et on va les expliquer ci-dessous :
 
 **1.Remplacement des dépendances réelles par des mocks**
 
-Dans les tests originaux, TranslationMap et Translation étaient utilisées telles quelles, ce qui rendait les tests dépendants des fichiers de traduction et des configurations réelles.
+Dans les tests originaux, `TranslationMap.java` et `Translation.java` étaient utilisées telles quelles, ce qui rendait les tests dépendants des fichiers de traduction et des configurations réelles.
 Dans les tests mockés, ces dépendances ont été remplacées par des objets simulés, permettant de contrôler totalement leur comportement. Par exemple, toute traduction renvoie "dummy".
 
 **2.Adaptation des assertions**
 
-Les tests officiels vérifiaient le texte exact des instructions vocales (par exemple "In 400 meters turn then") mais cela ne nous importe pas car on veut tester la logique avec les mocks en eliminant la dependance au fichier contenant les strings avec les directions. Donc les assertions se concentrent sur la logique interne de la classe : la sélection correcte de la distance (distanceAlongGeometry / distanceVoiceValue) et la présence de la description de direction(Left/Right) dans l’objet retourné.
+Les tests officiels vérifiaient le texte exact des instructions vocales (par exemple "In 400 meters turn then"), mais cela ne nous importe pas car on veut tester la logique avec les mocks en eliminant la dependance au fichier contenant les strings avec les directions. Donc les assertions se concentrent sur la logique interne de la classe : la sélection correcte de la distance (distanceAlongGeometry / distanceVoiceValue) et la présence de la description de direction(Left/Right) dans l’objet retourné.
 
 **3.Isolation de la classe testée**
 
